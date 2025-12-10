@@ -1,27 +1,24 @@
 package org.example.model;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.SuperBuilder;
+
 import java.io.Serial;
 import java.io.Serializable;
 
+@Data
+@SuperBuilder
+@EqualsAndHashCode(callSuper = false)
 public abstract sealed class Investment implements Serializable, Comparable<Investment> permits Stock, Bond, MutualFund {
-
+    @Getter
     protected final String id;
+    @Getter
     protected final String name;
     @Serial
     private static final long serialVersionUID = 1L;
-
-    protected Investment(String id, String name) {
-        this.id = id;
-        this.name = name;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
 
     public abstract double calculateCurrentValue();
 
@@ -35,11 +32,9 @@ public abstract sealed class Investment implements Serializable, Comparable<Inve
     @Override
     public int compareTo(Investment o) {
         if (Double.compare(calculateCurrentValue(), o.calculateCurrentValue()) == 0) {
-            return this.name.compareTo(o.getName());
+            return this.name.compareTo(o.name);
         } else {
             return Double.compare(calculateCurrentValue(), o.calculateCurrentValue());
         }
     }
-
-
 }
