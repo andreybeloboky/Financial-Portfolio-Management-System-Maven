@@ -1,0 +1,105 @@
+package org.example.controller;
+
+import org.example.model.*;
+import org.example.service.PortfolioService;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Scanner;
+
+public class PortfolioController {
+
+    private static final String EXIT_MESSAGE = "Goodbye";
+    private static final String SPLIT_COMMA = ",";
+    private static final String SPLIT_WHITESPACE = " ";
+    private static final String ENTER_YEAR_MESSAGE = "Enter the year which you want to get:";
+    private static final String YEAR_ERROR_MESSAGE = "There is no such %s year in this list";
+    private static final String INCORRECT_MESSAGE = "This %s doesn't exist.";
+    private static final String VALUE = "%s value %s \n";
+
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        PortfolioService service = new PortfolioService();
+        String userCommand = scanner.nextLine();
+        String[] splitCommand = userCommand.split(SPLIT_WHITESPACE);
+        Command command = Command.valueOf(splitCommand[0].toUpperCase());
+        switch (command) {
+            case ADD:
+                InvestmentType investmentType = InvestmentType.valueOf(splitCommand[1].toUpperCase());
+                switch (investmentType) {
+                    case STOCK -> {
+                        Stock newInvestment = new Stock("ID321", "Microsoft Corp.", "MSFT", 75, 310.50, 2.25, "Test");
+                        service.createInvestment(newInvestment);
+                    }
+                    case BOND -> {
+                        Bond newInvestment = new Bond("ID654", "Corporate Bond XYZ", 5000, 0.045, LocalDate.of(2028, 6, 30));
+                        service.createInvestment(newInvestment);
+                    }
+                    case MUTUAL_FUND -> {
+                        MutualFund newInvestment = new MutualFund("ID987", "Emerging Markets Fund", "EMF456", 1200.75, 18.40, 0.95);
+                        service.createInvestment(newInvestment);
+                    }
+                }
+                break;
+            case LIST:
+                List<Investment> allPortfolio = service.getAllInvestments();
+                for (Investment investment : allPortfolio) {
+                    switch (investment) {
+                        case Bond bond ->
+                                System.out.println(bond.getId() + SPLIT_COMMA + bond.getName() + SPLIT_COMMA + bond.getCouponRate() + SPLIT_COMMA + bond.getFaceValue() + SPLIT_COMMA + bond.getMaturityDate());
+                        case Stock stock ->
+                                System.out.println(stock.getId() + SPLIT_COMMA + stock.getName() + SPLIT_COMMA + stock.getTickerSymbol() + SPLIT_COMMA + stock.getShares() + SPLIT_COMMA + stock.getCurrentSharePrice() + SPLIT_COMMA + stock.getAnnualDividendPerShare());
+                        case MutualFund mutualFund ->
+                                System.out.println(mutualFund.getId() + SPLIT_COMMA + mutualFund.getName() + SPLIT_COMMA + mutualFund.getFundCode() + SPLIT_COMMA + mutualFund.getCurrentNAV() + SPLIT_COMMA + mutualFund.getUnitsHeld() + SPLIT_COMMA + mutualFund.getAvgAnnualDistribution());
+                        default -> throw new IllegalStateException(INCORRECT_MESSAGE.formatted(investment));
+                    }
+                }
+                break;
+            case CLONE:
+                String id = splitCommand[1];
+                try {
+                    service.cloneInvestment(id);
+                } catch (CloneNotSupportedException e) {
+                    throw new RuntimeException(e);
+                }
+                break;
+            case REPORT:
+                CommandReport commandReport = CommandReport.valueOf(splitCommand[1].toUpperCase());
+                switch (commandReport) {
+                    case VALUE -> System.out.println(service.calculateTotalPortfolioValue());
+                    case RETURN -> System.out.println(service.calculateTotalProjectedAnnualReturn());
+                    case HIGHEST -> {
+                        Investment highestValueAsset = service.findHighestValueAsset();
+                        System.out.println(highestValueAsset.getName());
+                    }
+                    case ALLOCATION -> {
+                        Map<String, Double> assetAllocationByType = service.findAssetAllocationByType();
+                        for (Map.Entry<String, Double> entry : assetAllocationByType.entrySet()) {
+                            System.out.printf(VALUE.formatted(entry.getKey(), entry.getValue()));
+                        }
+                    }
+                    case YEAR -> {
+                        System.out.println(ENTER_YEAR_MESSAGE);
+                        int year = scanner.nextInt();
+                        List<Investment> bondInvestment = service.findBondsMaturingIn(year);
+                        if (!bondInvestment.isEmpty()) {
+                            for (Investment bondIterator : bondInvestment) {
+                                if (Objects.requireNonNull(bondIterator) instanceof Bond bond) {
+                                    System.out.println(bond.getId() + SPLIT_COMMA + bond.getName());
+                                }
+                            }
+                        } else {
+                            System.out.printf(YEAR_ERROR_MESSAGE.formatted(year));
+                        }
+                    }
+                }
+                break;
+            case EXIT:
+                System.out.println(EXIT_MESSAGE);
+                break;
+        }
+    }
+}
