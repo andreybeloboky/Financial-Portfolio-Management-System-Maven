@@ -1,8 +1,11 @@
 package org.example.service;
 
 
+import org.apache.commons.lang3.Validate;
 import org.example.model.*;
 import org.example.repository.BinaryRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -12,10 +15,12 @@ import static java.util.Objects.requireNonNull;
 public class PortfolioService {
 
     private static final String INCORRECT_MESSAGE = "This %s doesn't exist.";
+    private static final Logger logger = LoggerFactory.getLogger(PortfolioService.class);
 
     private final BinaryRepository repository = new BinaryRepository();
 
     public double calculateTotalPortfolioValue() {
+        logger.debug("Calculating total portfolio value");
         List<Investment> portfolio = getAllInvestments();
         double totalSum = 0;
         for (Investment investment : portfolio) {
@@ -44,7 +49,10 @@ public class PortfolioService {
                 case Bond bond -> bondAllocation += bond.calculateCurrentValue();
                 case Stock stock -> stockAllocation += stock.calculateCurrentValue();
                 case MutualFund mutualFund -> mutualFunAllocation += mutualFund.calculateCurrentValue();
-                default -> throw new IllegalStateException(INCORRECT_MESSAGE.formatted(investment));
+                default -> {
+                    logger.error("Unknown investment type: {}", investment.getClass().getName());
+                    throw new IllegalStateException(INCORRECT_MESSAGE.formatted(investment));
+                }
             }
         }
         assetAllocationByType.put(InvestmentType.STOCK.toString(), stockAllocation);
@@ -54,6 +62,7 @@ public class PortfolioService {
     }
 
     public List<Investment> findBondsMaturingIn(int year) {
+        logger.debug("Searching for bonds maturing in {}", year);
         List<Investment> portfolio = getAllInvestments();
         List<Investment> bonds = new LinkedList<>();
         for (Investment investment : portfolio) {
@@ -65,10 +74,12 @@ public class PortfolioService {
                 }
             }
         }
+        logger.debug("Found {} bonds maturing in {}", bonds.size(), year);
         return bonds;
     }
 
     public Investment findHighestValueAsset() {
+        logger.debug("Finding highest value asset");
         Investment investment = null;
         List<Investment> portfolio = getAllInvestments();
         double current;
@@ -80,19 +91,26 @@ public class PortfolioService {
                 investment = investmentHighestValue;
             }
         }
+        assert investment != null;
+        logger.info("Highest value asset is {} with value {}",
+                investment.getName(), max);
         return investment;
     }
 
     public void createInvestment(Investment newInvestment) {
+        Validate.notBlank(newInvestment.getName(), "Name cannot be empty");
         List<Investment> portfolio = repository.loadState();
         portfolio.add(newInvestment);
         Collections.sort(portfolio);
         repository.saveState(portfolio);
+        logger.info("Investment created: {}, {}", newInvestment.getId(), newInvestment.getName());
     }
 
     public List<Investment> getAllInvestments() {
+        logger.debug("Loading all investments from repository");
         List<Investment> portfolio = repository.loadState();
         Collections.sort(portfolio);
+        logger.debug("Loaded {} investments", portfolio.size());
         return portfolio;
     }
 
@@ -108,5 +126,7 @@ public class PortfolioService {
         portfolio.add(investmentClone);
         Collections.sort(portfolio);
         repository.saveState(portfolio);
+        assert investmentClone != null;
+        logger.info("Investment cloned: {}, {}", investmentClone.getId(), investmentClone.getName());
     }
 }

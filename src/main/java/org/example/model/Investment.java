@@ -12,7 +12,7 @@ import java.io.Serializable;
 @Data
 @SuperBuilder
 @EqualsAndHashCode(callSuper = false)
-public abstract sealed class Investment implements Serializable, Comparable<Investment> permits Stock, Bond, MutualFund {
+public abstract sealed class Investment implements Cloneable, Serializable, Comparable<Investment> permits Stock, Bond, MutualFund {
     @Getter
     protected final String id;
     @Getter
