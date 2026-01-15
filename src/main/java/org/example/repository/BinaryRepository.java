@@ -12,19 +12,27 @@ import java.util.List;
 
 public class BinaryRepository {
 
-    private static final File FILE_PATH = new File("resources/portfolio.ser");
+    private final File filePath;
     private static final String PORTFOLIO_LOAD_MESSAGE = "Failed to load portfolio state";
     private static final String PORTFOLIO_SAVE_MESSAGE = "Failed to save portfolio state";
     private static final Logger logger = LoggerFactory.getLogger(BinaryRepository.class);
 
+    public BinaryRepository() {
+        this("src/main/resources/portfolio.ser");
+    }
+
+    BinaryRepository(String path) {
+        this.filePath = new File(path);
+    }
+
     public List<Investment> loadState() {
-        if (FILE_PATH.length() == 0) {
+        if (filePath.length() == 0) {
             logger.warn("Portfolio file is empty, returning an empty portfolio");
             return new LinkedList<>();
         }
         List<Investment> portfolio = new LinkedList<>();
-        logger.info("Loading portfolio state from {}", FILE_PATH.getAbsolutePath());
-        try (ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(FILE_PATH))) {
+        logger.info("Loading portfolio state from {}", filePath.getAbsolutePath());
+        try (ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(filePath))) {
             boolean endOfFile = false;
             while (!endOfFile) {
                 try {
@@ -42,9 +50,9 @@ public class BinaryRepository {
     }
 
     public void saveState(List<Investment> data) {
-        logger.info("Saving portfolio state to {}", FILE_PATH.getAbsolutePath());
-        try ( FileOutputStream out = new FileOutputStream(String.valueOf(FILE_PATH));
-              ObjectOutput objectOutput = new ObjectOutputStream(out)) {
+        logger.info("Saving portfolio state to {}", filePath.getAbsolutePath());
+        try (FileOutputStream out = new FileOutputStream(String.valueOf(filePath));
+             ObjectOutput objectOutput = new ObjectOutputStream(out)) {
             for (Investment investment : data) {
                 objectOutput.writeObject(investment);
             }

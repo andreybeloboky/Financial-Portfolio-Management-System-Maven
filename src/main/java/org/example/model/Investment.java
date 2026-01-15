@@ -12,9 +12,7 @@ import java.io.Serializable;
 @SuperBuilder
 @EqualsAndHashCode(callSuper = false)
 public abstract sealed class Investment implements Cloneable, Serializable, Comparable<Investment> permits Stock, Bond, MutualFund {
-    @Getter
     protected final String id;
-    @Getter
     protected final String name;
     @Serial
     private static final long serialVersionUID = 1L;

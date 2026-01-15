@@ -1,6 +1,7 @@
 package org.example.service;
 
 
+import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.Validate;
 import org.example.model.*;
 import org.example.repository.BinaryRepository;
@@ -12,12 +13,14 @@ import java.util.*;
 
 import static java.util.Objects.requireNonNull;
 
+@AllArgsConstructor
 public class PortfolioService {
 
     private static final String INCORRECT_MESSAGE = "This %s doesn't exist.";
     private static final Logger logger = LoggerFactory.getLogger(PortfolioService.class);
 
-    private final BinaryRepository repository = new BinaryRepository();
+
+    private final BinaryRepository repository;
 
     public double calculateTotalPortfolioValue() {
         logger.debug("Calculating total portfolio value");

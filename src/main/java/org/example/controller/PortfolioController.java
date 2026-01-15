@@ -1,6 +1,7 @@
 package org.example.controller;
 
 import org.example.model.*;
+import org.example.repository.BinaryRepository;
 import org.example.service.PortfolioService;
 
 import java.time.LocalDate;
@@ -22,7 +23,7 @@ public class PortfolioController {
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        PortfolioService service = new PortfolioService();
+        PortfolioService service = new PortfolioService(new BinaryRepository());
         String userCommand = scanner.nextLine();
         String[] splitCommand = userCommand.split(SPLIT_WHITESPACE);
         Command command = Command.valueOf(splitCommand[0].toUpperCase());
