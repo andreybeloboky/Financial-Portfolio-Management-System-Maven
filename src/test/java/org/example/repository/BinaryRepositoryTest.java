@@ -10,10 +10,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class BinaryRepositoryTest {
 
     @Test
-    public void BinaryTest() {
+    public void loadStateTest() {
         BinaryRepository binaryRepository = new BinaryRepository("src/test/resources/anothername.ser");
         List<Investment> investments = binaryRepository.loadState();
         assertEquals(6, investments.size());
     }
-
 }
