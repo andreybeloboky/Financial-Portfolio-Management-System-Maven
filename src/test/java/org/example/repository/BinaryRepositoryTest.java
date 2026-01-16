@@ -11,7 +11,7 @@ class BinaryRepositoryTest {
 
     @Test
     public void loadStateTest() {
-        BinaryRepository binaryRepository = new BinaryRepository("src/test/resources/anothername.ser");
+        BinaryRepository binaryRepository = new BinaryRepository("src/test/resources/portfolioTest.ser");
         List<Investment> investments = binaryRepository.loadState();
         assertEquals(6, investments.size());
     }

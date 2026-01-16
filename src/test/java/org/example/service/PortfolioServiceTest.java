@@ -19,36 +19,36 @@ public class PortfolioServiceTest {
     public void calculateTotalPortfolioValueTestMethod() {
         BinaryRepository mock = mock(BinaryRepository.class);
         when(mock.loadState()).thenReturn(new ArrayList<>());
-        PortfolioService obj = new PortfolioService(mock);
-        double result = obj.calculateTotalPortfolioValue();
-        assertEquals(0.0, result);
+        PortfolioService service = new PortfolioService(mock);
+        double totalValue = service.calculateTotalPortfolioValue();
+        assertEquals(0.0, totalValue);
     }
 
     @Test
     public void calculateTotalProjectedAnnualReturnTest() {
         BinaryRepository mock = mock(BinaryRepository.class);
         when(mock.loadState()).thenReturn(new ArrayList<>());
-        PortfolioService obj = new PortfolioService(mock);
-        double result = obj.calculateTotalProjectedAnnualReturn();
-        assertEquals(0.0, result);
+        PortfolioService service = new PortfolioService(mock);
+        double projectedAnnualReturn = service.calculateTotalProjectedAnnualReturn();
+        assertEquals(0.0, projectedAnnualReturn);
     }
 
     @Test
     public void findAssetAllocationByTypeTest() {
         BinaryRepository mock = mock(BinaryRepository.class);
         when(mock.loadState()).thenReturn(new ArrayList<>());
-        PortfolioService obj = new PortfolioService(mock);
-        Map<String, Double> result = obj.findAssetAllocationByType();
-        assertEquals(3, result.size());
+        PortfolioService service = new PortfolioService(mock);
+        Map<String, Double> allocationMap = service.findAssetAllocationByType();
+        assertEquals(3, allocationMap.size());
     }
 
     @Test
     public void findBondsMaturingInTest() {
         BinaryRepository mock = mock(BinaryRepository.class);
         when(mock.loadState()).thenReturn(new ArrayList<>());
-        PortfolioService obj = new PortfolioService(mock);
-        List<Investment> result = obj.findBondsMaturingIn(2023);
-        assertEquals(0, result.size());
+        PortfolioService service = new PortfolioService(mock);
+        List<Investment> maturingBonds = service.findBondsMaturingIn(2023);
+        assertEquals(0, maturingBonds.size());
     }
 
     @Test
@@ -56,9 +56,9 @@ public class PortfolioServiceTest {
         BinaryRepository mock = mock(BinaryRepository.class);
         when(mock.loadState()).thenReturn(Collections.singletonList(Stock.builder().id("ID321").name("Microsoft Corp.").tickerSymbol("MSFT")
                 .shares(75).currentSharePrice(310.50).annualDividendPerShare(2.25).build()));
-        PortfolioService obj = new PortfolioService(mock);
-        Investment result = obj.findHighestValueAsset();
-        assertEquals("Microsoft Corp.", result.getName());
+        PortfolioService service = new PortfolioService(mock);
+        Investment highestValueAsset = service.findHighestValueAsset();
+        assertEquals("Microsoft Corp.", highestValueAsset.getName());
     }
 
     @Test
@@ -68,9 +68,8 @@ public class PortfolioServiceTest {
                         .shares(75).currentSharePrice(310.50).annualDividendPerShare(2.25).build(),
                 Bond.builder().id("ID654").name("Corporate Bond XYZ").faceValue(5000)
                         .couponRate(0.045).maturityDate(LocalDate.of(2028, 6, 30)).build()));
-        PortfolioService obj = new PortfolioService(mock);
-        List<Investment> result = obj.getAllInvestments();
-        assertEquals(2, result.size());
-
+        PortfolioService service = new PortfolioService(mock);
+        List<Investment> investments = service.getAllInvestments();
+        assertEquals(2, investments.size());
     }
 }
