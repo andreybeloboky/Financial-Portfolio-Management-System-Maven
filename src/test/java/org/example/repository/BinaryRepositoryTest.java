@@ -14,5 +14,10 @@ class BinaryRepositoryTest {
         BinaryRepository binaryRepository = new BinaryRepository("src/test/resources/portfolioTest.ser");
         List<Investment> investments = binaryRepository.loadState();
         assertEquals(6, investments.size());
+        // 1. empty 2. doesn't exist 3. invalid
+        // 1 successful 2 negative
+
+        //
     }
+    // todo save method
 }

@@ -1,5 +1,6 @@
 package org.example.controller;
 
+import lombok.AllArgsConstructor;
 import org.example.model.*;
 import org.example.repository.BinaryRepository;
 import org.example.service.PortfolioService;
@@ -10,6 +11,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Scanner;
 
+@AllArgsConstructor
 public class PortfolioController {
 
     private static final String EXIT_MESSAGE = "Goodbye";
@@ -20,10 +22,10 @@ public class PortfolioController {
     private static final String INCORRECT_MESSAGE = "This %s doesn't exist.";
     private static final String VALUE = "%s value %s \n";
 
+    private Scanner scanner;
+    private PortfolioService service;
 
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        PortfolioService service = new PortfolioService(new BinaryRepository());
+    public void process() {
         String userCommand = scanner.nextLine();
         String[] splitCommand = userCommand.split(SPLIT_WHITESPACE);
         Command command = Command.valueOf(splitCommand[0].toUpperCase());
@@ -80,8 +82,8 @@ public class PortfolioController {
                         System.out.println(highestValueAsset.getName());
                     }
                     case ALLOCATION -> {
-                        Map<String, Double> assetAllocationByType = service.findAssetAllocationByType();
-                        for (Map.Entry<String, Double> entry : assetAllocationByType.entrySet()) {
+                        Map<InvestmentType, Double> assetAllocationByType = service.findAssetAllocationByType();
+                        for (Map.Entry<InvestmentType, Double> entry : assetAllocationByType.entrySet()) {
                             System.out.printf(VALUE.formatted(entry.getKey(), entry.getValue()));
                         }
                     }

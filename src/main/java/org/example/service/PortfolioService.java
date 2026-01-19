@@ -19,7 +19,6 @@ public class PortfolioService {
     private static final String INCORRECT_MESSAGE = "This %s doesn't exist.";
     private static final Logger logger = LoggerFactory.getLogger(PortfolioService.class);
 
-
     private final BinaryRepository repository;
 
     public double calculateTotalPortfolioValue() {
@@ -41,9 +40,9 @@ public class PortfolioService {
         return totalSum;
     }
 
-    public Map<String, Double> findAssetAllocationByType() {
+    public Map<InvestmentType, Double> findAssetAllocationByType() {
         List<Investment> portfolio = getAllInvestments();
-        Map<String, Double> assetAllocationByType = new HashMap<>();
+        Map<InvestmentType, Double> assetAllocationByType = new HashMap<>();
         double bondAllocation = 0;
         double stockAllocation = 0;
         double mutualFunAllocation = 0;
@@ -58,9 +57,9 @@ public class PortfolioService {
                 }
             }
         }
-        assetAllocationByType.put(InvestmentType.STOCK.toString(), stockAllocation);
-        assetAllocationByType.put(InvestmentType.BOND.toString(), bondAllocation);
-        assetAllocationByType.put(InvestmentType.MUTUAL_FUND.toString(), mutualFunAllocation);
+        assetAllocationByType.put(InvestmentType.STOCK, stockAllocation);
+        assetAllocationByType.put(InvestmentType.BOND, bondAllocation);
+        assetAllocationByType.put(InvestmentType.MUTUAL_FUND, mutualFunAllocation);
         return assetAllocationByType;
     }
 
@@ -94,7 +93,8 @@ public class PortfolioService {
                 investment = investmentHighestValue;
             }
         }
-        assert investment != null;
+       // assert investment != null; //todo  delete and why,\\
+        Objects.requireNonNull(investment);  // why i should use it
         logger.info("Highest value asset is {} with value {}",
                 investment.getName(), max);
         return investment;
