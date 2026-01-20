@@ -2,14 +2,14 @@ package org.example.controller;
 
 import org.example.model.Bond;
 import org.example.model.Investment;
+import org.example.model.InvestmentType;
 import org.example.model.Stock;
 import org.example.service.PortfolioService;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
 import java.time.LocalDate;
-import java.util.Collections;
-import java.util.Scanner;
+import java.util.*;
 
 import static org.mockito.Mockito.*;
 
@@ -18,8 +18,11 @@ class PortfolioControllerTest {
     @Test
     public void controllerFindAssetAllocationByTypeTest() {
         PortfolioService portfolioService = mock(PortfolioService.class);
-        Investment fakeInvestment = Stock.builder().id("ID321").name("Microsoft Corp.").tickerSymbol("MSFT").shares(10).currentSharePrice(100).annualDividendPerShare(1).build();
-        when(portfolioService.findHighestValueAsset()).thenReturn(fakeInvestment);
+        Map<InvestmentType, Double> fakeInvestments = new HashMap<>();
+        fakeInvestments.put(InvestmentType.STOCK, 10.2);
+        fakeInvestments.put(InvestmentType.BOND, 13.2);
+        fakeInvestments.put(InvestmentType.MUTUAL_FUND, 11.2);
+        when(portfolioService.findAssetAllocationByType()).thenReturn(fakeInvestments);
         ByteArrayInputStream input = new ByteArrayInputStream("REPORT ALLOCATION\n".getBytes());
         Scanner scanner = new Scanner(input);
         PortfolioController controller = new PortfolioController(scanner, portfolioService);
@@ -38,5 +41,17 @@ class PortfolioControllerTest {
         PortfolioController controller = new PortfolioController(scanner, portfolioService);
         controller.process();
         verify(portfolioService, times(1)).findBondsMaturingIn(2028);
+    }
+
+    @Test
+    public void controllerFindBondsMaturingInTestNegative() {
+        PortfolioService portfolioService = mock(PortfolioService.class);
+        List<Investment> emptyList = new ArrayList<>();
+        when(portfolioService.findBondsMaturingIn(2026)).thenReturn(emptyList);
+        ByteArrayInputStream input = new ByteArrayInputStream("REPORT YEAR\n2026\n".getBytes());
+        Scanner scanner = new Scanner(input);
+        PortfolioController controller = new PortfolioController(scanner, portfolioService);
+        controller.process();
+        verify(portfolioService, times(1)).findBondsMaturingIn(2026);
     }
 }
