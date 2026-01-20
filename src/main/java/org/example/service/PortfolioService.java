@@ -94,7 +94,7 @@ public class PortfolioService {
             }
         }
        // assert investment != null; //todo  delete and why,\\
-        Objects.requireNonNull(investment);  // why i should use it
+        Objects.requireNonNull(investment);
         logger.info("Highest value asset is {} with value {}",
                 investment.getName(), max);
         return investment;
