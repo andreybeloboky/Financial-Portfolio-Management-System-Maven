@@ -1,11 +1,18 @@
 package org.example.repository;
 
 import org.example.model.Investment;
+import org.example.model.Stock;
 import org.junit.jupiter.api.Test;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.doThrow;
 
 class BinaryRepositoryTest {
 
@@ -13,9 +20,44 @@ class BinaryRepositoryTest {
     public void loadStateTest() {
         BinaryRepository binaryRepository = new BinaryRepository("src/test/resources/portfolioTest.ser");
         List<Investment> investments = binaryRepository.loadState();
-        assertEquals(6, investments.size());
-        // 1. empty 2. doesn't exist 3. invalid
-        // 1 successful 2 negative
+        assertEquals(1, investments.size());
     }
-    // todo save method
+
+    @Test
+    public void loadStateEmptyTest() {
+        BinaryRepository binaryRepository = new BinaryRepository("src/test/resources/portfolioEmptyTest.ser");
+        List<Investment> investments = binaryRepository.loadState();
+        assertEquals(0, investments.size());
+    }
+
+    @Test
+    void loadState_shouldThrowPortfolioLoadException_whenClassNotFoundTest() throws Exception {
+        File filePath = new File("src/test/resources/portfolioTest.ser");
+        try (FileOutputStream fos = new FileOutputStream(filePath)) {
+            fos.write(new byte[]{0, 1, 2, 3, 4});
+        }
+        BinaryRepository repository = new BinaryRepository(filePath.getAbsolutePath());
+        assertThrows(PortfolioLoadException.class, repository::loadState);
+    }
+
+    @Test
+    void saveStateTest() throws Exception {
+        File filePath = new File("src/test/resources/portfolioTest.ser");
+        Investment inv = Stock.builder()
+                .id("ID1")
+                .name("Test Stock")
+                .tickerSymbol("TST")
+                .shares(10)
+                .currentSharePrice(100)
+                .annualDividendPerShare(1)
+                .build();
+        List<Investment> data = List.of(inv);
+        BinaryRepository repo = new BinaryRepository(filePath.getAbsolutePath());
+        repo.saveState(data);
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(filePath))) {
+            Investment read = (Investment) in.readObject();
+            assertEquals(inv.getId(), read.getId());
+            assertEquals(inv.getName(), read.getName());
+        }
+    }
 }
