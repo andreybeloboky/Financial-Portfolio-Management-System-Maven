@@ -161,7 +161,7 @@ public class PortfolioServiceTest {
     }
 
     @Test
-    public void cloneInvestmentExceptionTest() throws CloneNotSupportedException {
+    public void cloneInvestmentExceptionTest() {
         BinaryRepository mock = mock(BinaryRepository.class);
         when(mock.loadState()).thenReturn(new ArrayList<>(Collections.singletonList(Stock.builder().id("ID321").name("Microsoft Corp.").tickerSymbol("MSFT")
                 .shares(75).currentSharePrice(310.50).annualDividendPerShare(2.25).build())));
