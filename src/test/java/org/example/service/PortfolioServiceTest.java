@@ -59,22 +59,6 @@ public class PortfolioServiceTest {
     }
 
     @Test
-    public void findAssetAllocationByTypeExceptionTest() {
-        BinaryRepository mock = mock(BinaryRepository.class);
-        when(mock.loadState()).thenReturn(Arrays.asList(Stock.builder().id("ID321").name("Microsoft Corp.").tickerSymbol("MSFT")
-                        .shares(75).currentSharePrice(310.50).annualDividendPerShare(2.25).build(),
-                Bond.builder().id("ID654").name("Corporate Bond XYZ").faceValue(5000)
-                        .couponRate(0.045).maturityDate(LocalDate.of(2028, 6, 30)).build(), MutualFund.builder().id("ID987").name("Emerging Markets Fund").fundCode("EMF456")
-                        .currentNAV(1200.75).avgAnnualDistribution(18.40).unitsHeld(0.95).build()));
-        PortfolioService service = new PortfolioService(mock);
-        Map<InvestmentType, Double> allocationMap = service.findAssetAllocationByType();
-        assertEquals(3, allocationMap.size());
-        assertEquals(23287.5, allocationMap.get(InvestmentType.STOCK));
-        assertEquals(5000.0, allocationMap.get(InvestmentType.BOND));
-        assertEquals(1140.7124999999999, allocationMap.get(InvestmentType.MUTUAL_FUND));
-    }
-
-    @Test
     public void findBondsMaturingInTest() {
         BinaryRepository mock = mock(BinaryRepository.class);
         when(mock.loadState()).thenReturn(Collections.singletonList(Bond.builder().id("ID654").name("Corporate Bond XYZ").faceValue(5000)
@@ -160,4 +144,31 @@ public class PortfolioServiceTest {
                 .build();
         assertThrows(IllegalArgumentException.class, () -> service.createInvestment(invalid));
     }
+
+    @Test
+    public void cloneInvestmentTest() throws CloneNotSupportedException {
+        BinaryRepository mock = mock(BinaryRepository.class);
+        when(mock.loadState()).thenReturn(new ArrayList<>(Collections.singletonList(Stock.builder().id("ID321").name("Microsoft Corp.").tickerSymbol("MSFT")
+                .shares(75).currentSharePrice(310.50).annualDividendPerShare(2.25).build())));
+        PortfolioService service = new PortfolioService(mock);
+        service.cloneInvestment("ID321");
+        ArgumentCaptor<List<Investment>> captor = ArgumentCaptor.forClass(List.class);
+        verify(mock).saveState(captor.capture());
+        List<Investment> savedList = captor.getValue();
+        assertEquals(2, savedList.size());
+        assertEquals(savedList.getFirst().getId(), savedList.getLast().getId());
+        verify(mock, times(1)).loadState();
+    }
+
+    @Test
+    public void cloneInvestmentExceptionTest() throws CloneNotSupportedException {
+        BinaryRepository mock = mock(BinaryRepository.class);
+        when(mock.loadState()).thenReturn(new ArrayList<>(Collections.singletonList(Stock.builder().id("ID321").name("Microsoft Corp.").tickerSymbol("MSFT")
+                .shares(75).currentSharePrice(310.50).annualDividendPerShare(2.25).build())));
+        PortfolioService service = new PortfolioService(mock);
+        assertThrows(AssertionError.class, () -> service.cloneInvestment("ID600"));
+        verify(mock, times(1)).loadState();
+    }
+
+
 }

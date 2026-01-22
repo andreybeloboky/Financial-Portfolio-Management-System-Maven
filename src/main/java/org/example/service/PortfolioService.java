@@ -41,12 +41,12 @@ public class PortfolioService {
     }
 
     public Map<InvestmentType, Double> findAssetAllocationByType() {
-        List<Investment> portfolio = getAllInvestments();
+        List<Investment> investmentList = getAllInvestments();
         Map<InvestmentType, Double> assetAllocationByType = new HashMap<>();
         double bondAllocation = 0;
         double stockAllocation = 0;
         double mutualFunAllocation = 0;
-        for (Investment investment : portfolio) {
+        for (Investment investment : investmentList) {
             switch (investment) {
                 case Bond bond -> bondAllocation += bond.calculateCurrentValue();
                 case Stock stock -> stockAllocation += stock.calculateCurrentValue();
@@ -93,7 +93,7 @@ public class PortfolioService {
                 investment = investmentHighestValue;
             }
         }
-        // assert investment != null; //todo  delete and why,\\
+        // assert investment != null; //todo  delete and why
         Objects.requireNonNull(investment);
         logger.info("Highest value asset is {} with value {}",
                 investment.getName(), max);
@@ -126,10 +126,10 @@ public class PortfolioService {
                 investmentClone = (Investment) investment.clone();
             }
         }
+        assert investmentClone != null;
         portfolio.add(investmentClone);
         Collections.sort(portfolio);
         repository.saveState(portfolio);
-        assert investmentClone != null;
         logger.info("Investment cloned: {}, {}", investmentClone.getId(), investmentClone.getName());
     }
 }

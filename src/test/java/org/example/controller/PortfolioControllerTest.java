@@ -3,7 +3,6 @@ package org.example.controller;
 import org.example.model.Bond;
 import org.example.model.Investment;
 import org.example.model.InvestmentType;
-import org.example.model.Stock;
 import org.example.service.PortfolioService;
 import org.junit.jupiter.api.Test;
 
