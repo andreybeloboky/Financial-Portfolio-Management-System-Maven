@@ -8,12 +8,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.doThrow;
 
 class BinaryRepositoryTest {
 
@@ -21,7 +19,7 @@ class BinaryRepositoryTest {
     public void loadStateTest() {
         BinaryRepository binaryRepository = new BinaryRepository("src/test/resources/portfolioTest.ser");
         List<Investment> investments = binaryRepository.loadState();
-        assertEquals(1, investments.size());
+        assertEquals(6, investments.size());
     }
 
     @Test
@@ -33,7 +31,7 @@ class BinaryRepositoryTest {
 
     @Test
     public void loadStateFakeTest() throws Exception {
-        File filePath = new File("src/test/resources/portfolioTest.ser");
+        File filePath = new File("src/test/resources/portfolioFakeTest.ser");
         try (FileOutputStream fos = new FileOutputStream(filePath)) {
             fos.write(new byte[]{0, 1, 2, 3, 4});
         }
@@ -43,7 +41,7 @@ class BinaryRepositoryTest {
 
     @Test
     public void saveStateTest() throws Exception {
-        File filePath = new File("src/test/resources/portfolioTest.ser");
+        File filePath = new File("src/test/resources/portfolioForSaveTest.ser");
         Investment inv = Stock.builder()
                 .id("ID1")
                 .name("Test Stock")
@@ -69,5 +67,4 @@ class BinaryRepositoryTest {
         List<Investment> test = List.of();
         assertThrows(PortfolioSaveException.class, () -> repo.saveState(test));
     }
-
 }
