@@ -3,13 +3,15 @@ package org.example.service;
 import org.example.model.*;
 import org.example.repository.BinaryRepository;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.*;
 
 import static junit.framework.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static junit.framework.Assert.assertTrue;
+import static org.mockito.Mockito.*;
 
 
 public class PortfolioServiceTest {
@@ -101,4 +103,32 @@ public class PortfolioServiceTest {
         List<Investment> investments = service.getAllInvestments();
         assertEquals(2, investments.size());
     }
+
+    @Test
+    public void createInvestmentTest() {
+        BinaryRepository mockRepo = mock(BinaryRepository.class);
+        when(mockRepo.loadState()).thenReturn(new ArrayList<>(Arrays.asList(Stock.builder().id("ID321").name("Microsoft Corp.").tickerSymbol("MSFT")
+                        .shares(75).currentSharePrice(310.50).annualDividendPerShare(2.25).build(),
+                Bond.builder().id("ID654").name("Corporate Bond XYZ").faceValue(5000)
+                        .couponRate(0.045).maturityDate(LocalDate.of(2028, 6, 30)).build())));
+        PortfolioService service = new PortfolioService(mockRepo);
+        Investment newBond = Bond.builder()
+                .id("ID156")
+                .name("Corporate Bond XYZZZ")
+                .faceValue(5000)
+                .couponRate(0.045)
+                .maturityDate(LocalDate.of(2028, 6, 30))
+                .build();
+        service.createInvestment(newBond);
+        ArgumentCaptor<List<Investment>> captor = ArgumentCaptor.forClass(List.class);
+        verify(mockRepo).saveState(captor.capture());
+        List<Investment> savedList = captor.getValue();
+        assertEquals(3, savedList.size());
+        assertTrue(savedList.contains(newBond));
+        List<Investment> sortedCopy = new ArrayList<>(savedList);
+        Collections.sort(sortedCopy);
+        assertEquals(sortedCopy, savedList);
+        verify(mockRepo, times(1)).loadState();
+    }
+
 }

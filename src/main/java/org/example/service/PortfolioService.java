@@ -93,7 +93,7 @@ public class PortfolioService {
                 investment = investmentHighestValue;
             }
         }
-       // assert investment != null; //todo  delete and why,\\
+        // assert investment != null; //todo  delete and why,\\
         Objects.requireNonNull(investment);
         logger.info("Highest value asset is {} with value {}",
                 investment.getName(), max);

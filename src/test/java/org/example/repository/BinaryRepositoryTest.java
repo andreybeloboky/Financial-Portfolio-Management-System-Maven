@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -31,7 +32,7 @@ class BinaryRepositoryTest {
     }
 
     @Test
-    void loadState_shouldThrowPortfolioLoadException_whenClassNotFoundTest() throws Exception {
+    public void loadStateFakeTest() throws Exception {
         File filePath = new File("src/test/resources/portfolioTest.ser");
         try (FileOutputStream fos = new FileOutputStream(filePath)) {
             fos.write(new byte[]{0, 1, 2, 3, 4});
@@ -41,7 +42,7 @@ class BinaryRepositoryTest {
     }
 
     @Test
-    void saveStateTest() throws Exception {
+    public void saveStateTest() throws Exception {
         File filePath = new File("src/test/resources/portfolioTest.ser");
         Investment inv = Stock.builder()
                 .id("ID1")
@@ -60,4 +61,13 @@ class BinaryRepositoryTest {
             assertEquals(inv.getName(), read.getName());
         }
     }
+
+    @Test
+    public void saveStateExceptionTest() {
+        File filePath = new File("testDir");
+        BinaryRepository repo = new BinaryRepository(filePath.getAbsolutePath());
+        List<Investment> test = List.of();
+        assertThrows(PortfolioSaveException.class, () -> repo.saveState(test));
+    }
+
 }
