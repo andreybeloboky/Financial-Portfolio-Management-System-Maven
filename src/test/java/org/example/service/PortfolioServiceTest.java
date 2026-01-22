@@ -1,5 +1,6 @@
 package org.example.service;
 
+import junit.framework.AssertionFailedError;
 import org.example.model.*;
 import org.example.repository.BinaryRepository;
 import org.junit.jupiter.api.Test;
@@ -69,21 +70,40 @@ public class PortfolioServiceTest {
     }
 
     @Test
-    public void findBondsMaturingInTestTwo() {
+    public void findBondsMaturingInNoFoundTest() {
         BinaryRepository mock = mock(BinaryRepository.class);
         when(mock.loadState()).thenReturn(Arrays.asList(Bond.builder().id("ID654").name("Corporate Bond XYZ").faceValue(5000)
                         .couponRate(0.045).maturityDate(LocalDate.of(2028, 6, 30)).build(),
                 Bond.builder().id("ID654").name("Corporate Bond XYZ").faceValue(5000)
-                        .couponRate(0.045).maturityDate(LocalDate.of(2003, 6, 30)).build()));
+                        .couponRate(0.045).maturityDate(LocalDate.of(2003, 6, 30)).build(),
+                Stock.builder().id("ID321").name("Microsoft Corp.").tickerSymbol("MSFT")
+                        .shares(75).currentSharePrice(310.50).annualDividendPerShare(2.25).build()));
         PortfolioService service = new PortfolioService(mock);
         List<Investment> maturingBonds = service.findBondsMaturingIn(2028);
         assertEquals("Corporate Bond XYZ", maturingBonds.getFirst().getName());
     }
 
     @Test
+    public void findBondsMaturingNullTest() {
+        BinaryRepository mock = mock(BinaryRepository.class);
+        Investment newBond = Bond.builder()
+                .id("ID156")
+                .name("Corporate Bond XYZZZ")
+                .faceValue(5000)
+                .couponRate(0.045)
+                .maturityDate(LocalDate.of(2028, 6, 30))
+                .build();
+        when(mock.loadState()).thenReturn(Arrays.asList(newBond, null));
+        PortfolioService service = new PortfolioService(mock);
+        assertThrows(NullPointerException.class, () -> service.findBondsMaturingIn(2028));
+    }
+
+    @Test
     public void findHighestValueAssetTest() {
         BinaryRepository mock = mock(BinaryRepository.class);
         when(mock.loadState()).thenReturn(Arrays.asList(Stock.builder().id("ID321").name("Microsoft Corp.").tickerSymbol("MSFT")
+                        .shares(75).currentSharePrice(310.50).annualDividendPerShare(2.25).build(),
+                Stock.builder().id("ID311").name("Microsoft Corp.").tickerSymbol("MSFT")
                         .shares(75).currentSharePrice(310.50).annualDividendPerShare(2.25).build(),
                 Bond.builder().id("ID654").name("Corporate Bond XYZ").faceValue(5000)
                         .couponRate(0.045).maturityDate(LocalDate.of(2028, 6, 30)).build()));

@@ -11,8 +11,6 @@ import org.slf4j.LoggerFactory;
 import java.time.LocalDate;
 import java.util.*;
 
-import static java.util.Objects.requireNonNull;
-
 @AllArgsConstructor
 public class PortfolioService {
 
@@ -68,7 +66,7 @@ public class PortfolioService {
         List<Investment> portfolio = getAllInvestments();
         List<Investment> bonds = new LinkedList<>();
         for (Investment investment : portfolio) {
-            if (requireNonNull(investment) instanceof Bond bond) {
+            if (investment instanceof Bond bond) {
                 LocalDate date = bond.getMaturityDate();
                 int yearBond = date.getYear();
                 if (yearBond == year) {
