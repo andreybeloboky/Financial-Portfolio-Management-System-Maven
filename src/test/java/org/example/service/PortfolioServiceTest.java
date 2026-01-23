@@ -1,6 +1,5 @@
 package org.example.service;
 
-import junit.framework.AssertionFailedError;
 import org.example.model.*;
 import org.example.repository.BinaryRepository;
 import org.junit.jupiter.api.Test;
