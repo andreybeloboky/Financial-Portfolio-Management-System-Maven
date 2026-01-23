@@ -123,7 +123,7 @@ public class PortfolioService {
                 investmentClone = (Investment) investment.clone();
             }
         }
-        assert investmentClone != null;
+        Objects.requireNonNull(investmentClone);
         portfolio.add(investmentClone);
         Collections.sort(portfolio);
         repository.saveState(portfolio);

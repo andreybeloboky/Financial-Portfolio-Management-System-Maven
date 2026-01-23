@@ -176,7 +176,7 @@ public class PortfolioServiceTest {
         List<Investment> savedList = captor.getValue();
         assertEquals(2, savedList.size());
         assertEquals(savedList.getFirst().getId(), savedList.getLast().getId());
-        verify(mock, times(1)).loadState();
+        verify(mock).loadState();
     }
 
     @Test
@@ -186,8 +186,6 @@ public class PortfolioServiceTest {
                 .shares(75).currentSharePrice(310.50).annualDividendPerShare(2.25).build())));
         PortfolioService service = new PortfolioService(mock);
         assertThrows(AssertionError.class, () -> service.cloneInvestment("ID600"));
-        verify(mock, times(1)).loadState();
+        verify(mock).loadState();
     }
-
-
 }
