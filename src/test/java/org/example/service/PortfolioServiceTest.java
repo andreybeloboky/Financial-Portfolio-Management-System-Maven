@@ -67,7 +67,6 @@ public class PortfolioServiceTest {
         PortfolioService service = new PortfolioService(mock);
         List<Investment> maturingBonds = service.findBondsMaturingIn(2023);
         assertEquals(0, maturingBonds.size());
-        assertEquals("ID654", maturingBonds.getFirst().getId());
     }
 
     @Test
