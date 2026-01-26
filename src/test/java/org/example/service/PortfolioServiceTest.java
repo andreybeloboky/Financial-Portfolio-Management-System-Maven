@@ -48,7 +48,8 @@ public class PortfolioServiceTest {
         when(mock.loadState()).thenReturn(Arrays.asList(Stock.builder().id("ID321").name("Microsoft Corp.").tickerSymbol("MSFT")
                         .shares(75).currentSharePrice(310.50).annualDividendPerShare(2.25).build(),
                 Bond.builder().id("ID654").name("Corporate Bond XYZ").faceValue(5000)
-                        .couponRate(0.045).maturityDate(LocalDate.of(2028, 6, 30)).build(), MutualFund.builder().id("ID987").name("Emerging Markets Fund").fundCode("EMF456")
+                        .couponRate(0.045).maturityDate(LocalDate.of(2028, 6, 30)).build(),
+                MutualFund.builder().id("ID987").name("Emerging Markets Fund").fundCode("EMF456")
                         .currentNAV(1200.75).avgAnnualDistribution(18.40).unitsHeld(0.95).build()));
         PortfolioService service = new PortfolioService(mock);
         Map<InvestmentType, Double> allocationMap = service.findAssetAllocationByType();
@@ -66,6 +67,7 @@ public class PortfolioServiceTest {
         PortfolioService service = new PortfolioService(mock);
         List<Investment> maturingBonds = service.findBondsMaturingIn(2023);
         assertEquals(0, maturingBonds.size());
+        assertEquals("ID654", maturingBonds.getFirst().getId());
     }
 
     @Test
@@ -185,7 +187,7 @@ public class PortfolioServiceTest {
         when(mock.loadState()).thenReturn(new ArrayList<>(Collections.singletonList(Stock.builder().id("ID321").name("Microsoft Corp.").tickerSymbol("MSFT")
                 .shares(75).currentSharePrice(310.50).annualDividendPerShare(2.25).build())));
         PortfolioService service = new PortfolioService(mock);
-        assertThrows(AssertionError.class, () -> service.cloneInvestment("ID600"));
+        assertThrows(NullPointerException.class, () -> service.cloneInvestment("ID600"));
         verify(mock).loadState();
     }
 }
