@@ -21,7 +21,7 @@ public class PortfolioService {
 
     public double calculateTotalPortfolioValue() {
         logger.debug("Calculating total portfolio value");
-        List<Investment> portfolio = getAllInvestments();
+        List<Investment> portfolio = takeAllInvestments();
         double totalSum = 0;
         for (Investment investment : portfolio) {
             totalSum += investment.calculateCurrentValue();
@@ -30,7 +30,7 @@ public class PortfolioService {
     }
 
     public double calculateTotalProjectedAnnualReturn() {
-        List<Investment> portfolio = getAllInvestments();
+        List<Investment> portfolio = takeAllInvestments();
         double totalSum = 0;
         for (Investment investment : portfolio) {
             totalSum += investment.getProjectedAnnualReturn();
@@ -39,7 +39,7 @@ public class PortfolioService {
     }
 
     public Map<InvestmentType, Double> findAssetAllocationByType() {
-        List<Investment> investmentList = getAllInvestments();
+        List<Investment> investmentList = takeAllInvestments();
         Map<InvestmentType, Double> assetAllocationByType = new HashMap<>();
         double bondAllocation = 0;
         double stockAllocation = 0;
@@ -63,7 +63,7 @@ public class PortfolioService {
 
     public List<Investment> findBondsMaturingIn(int year) {
         logger.debug("Searching for bonds maturing in {}", year);
-        List<Investment> portfolio = getAllInvestments();
+        List<Investment> portfolio = takeAllInvestments();
         List<Investment> bonds = new LinkedList<>();
         for (Investment investment : portfolio) {
             if (investment instanceof Bond bond) {
@@ -81,7 +81,7 @@ public class PortfolioService {
     public Investment findHighestValueAsset() {
         logger.debug("Finding highest value asset");
         Investment investment = null;
-        List<Investment> portfolio = getAllInvestments();
+        List<Investment> portfolio = takeAllInvestments();
         double current;
         double max = 0;
         for (Investment investmentHighestValue : portfolio) {
@@ -106,7 +106,7 @@ public class PortfolioService {
         logger.info("Investment created: {}, {}", newInvestment.getId(), newInvestment.getName());
     }
 
-    public List<Investment> getAllInvestments() {
+    public List<Investment> takeAllInvestments() {
         logger.debug("Loading all investments from repository");
         List<Investment> portfolio = repository.loadState();
         Collections.sort(portfolio);

@@ -57,6 +57,8 @@ class BinaryRepositoryTest {
             Investment read = (Investment) in.readObject();
             assertEquals(inv.getId(), read.getId());
             assertEquals(inv.getName(), read.getName());
+            assertEquals(inv.calculateCurrentValue(), read.calculateCurrentValue());
+            assertEquals(inv.getProjectedAnnualReturn(), read.getProjectedAnnualReturn());
         }
     }
 
@@ -65,6 +67,6 @@ class BinaryRepositoryTest {
         File filePath = new File("testDir");
         BinaryRepository repo = new BinaryRepository(filePath.getAbsolutePath());
         List<Investment> test = List.of();
-        assertThrows(PortfolioSaveException.class, () -> repo.saveState(test));
+        assertThrows(IncorrectSaveException.class, () -> repo.saveState(test));
     }
 }

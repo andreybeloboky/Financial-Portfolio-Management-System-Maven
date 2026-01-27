@@ -59,7 +59,7 @@ public class BinaryRepository {
             logger.info("Successfully saved {} investments", data.size());
         } catch (IOException e) {
             logger.error(PORTFOLIO_SAVE_MESSAGE, e);
-            throw new PortfolioSaveException(PORTFOLIO_SAVE_MESSAGE, e);
+            throw new IncorrectSaveException(PORTFOLIO_SAVE_MESSAGE, e);
         }
     }
 }

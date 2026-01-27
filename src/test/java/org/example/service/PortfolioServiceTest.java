@@ -60,7 +60,7 @@ public class PortfolioServiceTest {
     }
 
     @Test
-    public void findBondsMaturingInTest() {
+    public void findBondsMaturingInNoFoundTest() {
         BinaryRepository mock = mock(BinaryRepository.class);
         when(mock.loadState()).thenReturn(Collections.singletonList(Bond.builder().id("ID654").name("Corporate Bond XYZ").faceValue(5000)
                 .couponRate(0.045).maturityDate(LocalDate.of(2028, 6, 30)).build()));
@@ -70,17 +70,17 @@ public class PortfolioServiceTest {
     }
 
     @Test
-    public void findBondsMaturingInNoFoundTest() {
+    public void findBondsMaturingInTest() {
         BinaryRepository mock = mock(BinaryRepository.class);
         when(mock.loadState()).thenReturn(Arrays.asList(Bond.builder().id("ID654").name("Corporate Bond XYZ").faceValue(5000)
-                        .couponRate(0.045).maturityDate(LocalDate.of(2028, 6, 30)).build(),
-                Bond.builder().id("ID654").name("Corporate Bond XYZ").faceValue(5000)
                         .couponRate(0.045).maturityDate(LocalDate.of(2003, 6, 30)).build(),
+                Bond.builder().id("ID654").name("Corporate Bond XYZXYZ").faceValue(5000)
+                        .couponRate(0.045).maturityDate(LocalDate.of(2028, 6, 30)).build(),
                 Stock.builder().id("ID321").name("Microsoft Corp.").tickerSymbol("MSFT")
                         .shares(75).currentSharePrice(310.50).annualDividendPerShare(2.25).build()));
         PortfolioService service = new PortfolioService(mock);
         List<Investment> maturingBonds = service.findBondsMaturingIn(2028);
-        assertEquals("Corporate Bond XYZ", maturingBonds.getFirst().getName());
+        assertEquals("Corporate Bond XYZXYZ", maturingBonds.getFirst().getName());
     }
 
     @Test
@@ -113,14 +113,14 @@ public class PortfolioServiceTest {
     }
 
     @Test
-    public void getAllInvestmentsTest() {
+    public void takeAllInvestmentsTest() {
         BinaryRepository mock = mock(BinaryRepository.class);
         when(mock.loadState()).thenReturn(Arrays.asList(Stock.builder().id("ID321").name("Microsoft Corp.").tickerSymbol("MSFT")
                         .shares(75).currentSharePrice(310.50).annualDividendPerShare(2.25).build(),
                 Bond.builder().id("ID654").name("Corporate Bond XYZ").faceValue(5000)
                         .couponRate(0.045).maturityDate(LocalDate.of(2028, 6, 30)).build()));
         PortfolioService service = new PortfolioService(mock);
-        List<Investment> investments = service.getAllInvestments();
+        List<Investment> investments = service.takeAllInvestments();
         assertEquals(2, investments.size());
     }
 

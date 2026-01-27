@@ -2,7 +2,6 @@ package org.example.controller;
 
 import lombok.AllArgsConstructor;
 import org.example.model.*;
-import org.example.repository.BinaryRepository;
 import org.example.service.PortfolioService;
 
 import java.time.LocalDate;
@@ -51,7 +50,7 @@ public class PortfolioController {
                 }
                 break;
             case LIST:
-                List<Investment> allPortfolio = service.getAllInvestments();
+                List<Investment> allPortfolio = service.takeAllInvestments();
                 for (Investment investment : allPortfolio) {
                     switch (investment) {
                         case Bond bond ->
