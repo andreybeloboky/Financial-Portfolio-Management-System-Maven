@@ -36,7 +36,7 @@ class BinaryRepositoryTest {
             fos.write(new byte[]{0, 1, 2, 3, 4});
         }
         BinaryRepository repository = new BinaryRepository(filePath.getAbsolutePath());
-        assertThrows(PortfolioLoadException.class, repository::loadState);
+        assertThrows(IncorrectLoadException.class, repository::loadState);
     }
 
     @Test

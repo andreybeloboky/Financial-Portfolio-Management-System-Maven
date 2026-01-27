@@ -50,13 +50,15 @@ public class PortfolioServiceTest {
                 Bond.builder().id("ID654").name("Corporate Bond XYZ").faceValue(5000)
                         .couponRate(0.045).maturityDate(LocalDate.of(2028, 6, 30)).build(),
                 MutualFund.builder().id("ID987").name("Emerging Markets Fund").fundCode("EMF456")
+                        .currentNAV(1200.75).avgAnnualDistribution(18.40).unitsHeld(0.95).build(),
+                MutualFund.builder().id("ID987").name("Emerging Markets Fund").fundCode("EMF456")
                         .currentNAV(1200.75).avgAnnualDistribution(18.40).unitsHeld(0.95).build()));
         PortfolioService service = new PortfolioService(mock);
         Map<InvestmentType, Double> allocationMap = service.findAssetAllocationByType();
         assertEquals(3, allocationMap.size());
         assertEquals(23287.5, allocationMap.get(InvestmentType.STOCK));
         assertEquals(5000.0, allocationMap.get(InvestmentType.BOND));
-        assertEquals(1140.7124999999999, allocationMap.get(InvestmentType.MUTUAL_FUND));
+        assertEquals(2281.4249999999997, allocationMap.get(InvestmentType.MUTUAL_FUND));
     }
 
     @Test
@@ -122,6 +124,8 @@ public class PortfolioServiceTest {
         PortfolioService service = new PortfolioService(mock);
         List<Investment> investments = service.takeAllInvestments();
         assertEquals(2, investments.size());
+        assertEquals("ID654", investments.get(0).getId());
+        assertEquals("Microsoft Corp.", investments.get(1).getName());
     }
 
     @Test

@@ -45,7 +45,7 @@ public class BinaryRepository {
             return portfolio;
         } catch (ClassNotFoundException | IOException e) {
             logger.error(PORTFOLIO_LOAD_MESSAGE, e);
-            throw new PortfolioLoadException(PORTFOLIO_LOAD_MESSAGE, e);
+            throw new IncorrectLoadException(PORTFOLIO_LOAD_MESSAGE, e);
         }
     }
 
