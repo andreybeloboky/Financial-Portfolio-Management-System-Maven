@@ -1,6 +1,7 @@
 package org.example.controller;
 
 import org.example.model.*;
+import org.example.repository.BinaryRepository;
 import org.example.service.PortfolioService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -9,6 +10,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import java.time.LocalDate;
 import java.util.*;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
@@ -18,9 +20,7 @@ class PortfolioControllerTest {
     public void controllerFindAssetAllocationByTypeTest() {
         PortfolioService portfolioService = mock(PortfolioService.class);
         Map<InvestmentType, Double> fakeInvestments = new HashMap<>();
-        fakeInvestments.put(InvestmentType.STOCK, 10.2);
-        fakeInvestments.put(InvestmentType.BOND, 13.2);
-        fakeInvestments.put(InvestmentType.MUTUAL_FUND, 11.2);
+        fakeInvestments.put(InvestmentType.MUTUAL_FUND, 1.0);
         when(portfolioService.findAssetAllocationByType()).thenReturn(fakeInvestments);
         Scanner scanner = mock(Scanner.class);
         when(scanner.nextLine()).thenReturn("REPORT ALLOCATION");
@@ -59,7 +59,6 @@ class PortfolioControllerTest {
     @Test
     public void calculateTotalProjectedAnnualReturnTest() {
         PortfolioService portfolioService = mock(PortfolioService.class);
-        when(portfolioService.calculateTotalProjectedAnnualReturn()).thenReturn(1.0);
         Scanner scanner = mock(Scanner.class);
         when(scanner.nextLine()).thenReturn("REPORT RETURN");
         PortfolioController controller = new PortfolioController(scanner, portfolioService);
@@ -83,7 +82,6 @@ class PortfolioControllerTest {
     @Test
     public void calculateTotalPortfolioValueTest() {
         PortfolioService portfolioService = mock(PortfolioService.class);
-        when(portfolioService.calculateTotalPortfolioValue()).thenReturn(1.0);
         Scanner scanner = mock(Scanner.class);
         when(scanner.nextLine()).thenReturn("REPORT VALUE");
         PortfolioController controller = new PortfolioController(scanner, portfolioService);

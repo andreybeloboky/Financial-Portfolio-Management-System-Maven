@@ -92,9 +92,7 @@ public class PortfolioController {
                         List<Investment> bondInvestment = service.findBondsMaturingIn(year);
                         if (!bondInvestment.isEmpty()) {
                             for (Investment bondIterator : bondInvestment) {
-                                if (Objects.requireNonNull(bondIterator) instanceof Bond bond) {
-                                    System.out.println(bond.getId() + SPLIT_COMMA + bond.getName());
-                                }
+                                    System.out.println(bondIterator.getId() + SPLIT_COMMA + bondIterator.getName());
                             }
                         } else {
                             System.out.printf(YEAR_ERROR_MESSAGE.formatted(year));
