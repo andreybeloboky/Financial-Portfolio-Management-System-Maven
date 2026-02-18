@@ -1,4 +1,4 @@
-package org.example.repository;
+package org.example.exception;
 
 public class IncorrectSaveException extends RuntimeException {
 

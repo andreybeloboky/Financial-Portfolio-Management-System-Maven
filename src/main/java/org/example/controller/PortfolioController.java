@@ -68,7 +68,7 @@ public class PortfolioController {
                 try {
                     service.cloneInvestment(id);
                 } catch (CloneNotSupportedException e) {
-                    throw new RuntimeException(e);
+                    throw new RuntimeException(e); // todo unique exception
                 }
                 break;
             case REPORT:

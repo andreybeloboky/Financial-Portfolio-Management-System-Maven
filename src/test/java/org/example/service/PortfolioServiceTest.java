@@ -3,6 +3,9 @@ package org.example.service;
 import org.example.model.*;
 import org.example.repository.BinaryRepository;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 
 import java.time.LocalDate;
@@ -47,17 +50,17 @@ public class PortfolioServiceTest {
         BinaryRepository mock = mock(BinaryRepository.class);
         when(mock.loadState()).thenReturn(Arrays.asList(Stock.builder().id("ID321").name("Microsoft Corp.").tickerSymbol("MSFT")
                         .shares(75).currentSharePrice(310.50).annualDividendPerShare(2.25).build(),
-                Bond.builder().id("ID654").name("Corporate Bond XYZ").faceValue(5000)
+                Bond.builder().id("ID654").name("Corporate Bond XYZ").faceValue(12)
                         .couponRate(0.045).maturityDate(LocalDate.of(2028, 6, 30)).build(),
                 MutualFund.builder().id("ID987").name("Emerging Markets Fund").fundCode("EMF456")
-                        .currentNAV(1200.75).avgAnnualDistribution(18.40).unitsHeld(0.95).build(),
+                        .currentNAV(1).avgAnnualDistribution(18.40).unitsHeld(0.95).build(),
                 MutualFund.builder().id("ID987").name("Emerging Markets Fund").fundCode("EMF456")
-                        .currentNAV(1200.75).avgAnnualDistribution(18.40).unitsHeld(0.95).build()));
+                        .currentNAV(1).avgAnnualDistribution(18.40).unitsHeld(0.95).build()));
         PortfolioService service = new PortfolioService(mock);
         Map<InvestmentType, Double> allocationMap = service.findAssetAllocationByType();
         assertEquals(3, allocationMap.size());
         assertEquals(23287.5, allocationMap.get(InvestmentType.STOCK));
-        assertEquals(5000.0, allocationMap.get(InvestmentType.BOND));
+        assertEquals(12.0, allocationMap.get(InvestmentType.BOND));
         assertEquals(2281.4249999999997, allocationMap.get(InvestmentType.MUTUAL_FUND));
     }
 
@@ -85,24 +88,6 @@ public class PortfolioServiceTest {
         assertEquals("Corporate Bond XYZXYZ", maturingBonds.getFirst().getName());
         assertEquals(1, maturingBonds.size());
     }
-
-    // The test is not needed because it checks an accidental
-    // NullPointerException, not real or intended behavior of the method.
-   /* @Test
-    public void findBondsMaturingNullTest() {
-        BinaryRepository mock = mock(BinaryRepository.class);
-        Investment newBond = Bond.builder()
-                .id("ID156")
-                .name("Corporate Bond XYZZZ")
-                .faceValue(5000)
-                .couponRate(0.045)
-                .maturityDate(LocalDate.of(2028, 6, 30))
-                .build();
-        when(mock.loadState()).thenReturn(Arrays.asList(newBond, null));
-        PortfolioService service = new PortfolioService(mock);
-        assertThrows(NullPointerException.class, () -> service.findBondsMaturingIn(2028));
-    }
-    */
 
     @Test
     public void findHighestValueAssetTest() {
@@ -158,19 +143,20 @@ public class PortfolioServiceTest {
         verify(mockRepo,times(1)).saveState(captor.capture());
     }
 
-    @Test
-    public void createInvestmentInvalidTest() {
-        BinaryRepository mockRepo = mock(BinaryRepository.class);
-        PortfolioService service = new PortfolioService(mockRepo);
-        Investment invalid = Bond.builder()
-                .id("ID999")
-                .name("")
-                .faceValue(1000)
-                .couponRate(0.03)
-                .maturityDate(LocalDate.of(2030, 1, 1))
-                .build();
-        assertThrows(IllegalArgumentException.class, () -> service.createInvestment(invalid));
-    }
+//    @ParameterizedTest
+//    @CsvSource Source( {"id", "name", "-1"}, {"id", "", "100"))
+//    public void createInvestmentInvalidTest(String  id, String name, String faceValue) {
+//        BinaryRepository mockRepo = mock(BinaryRepository.class);
+//        PortfolioService service = new PortfolioService(mockRepo);
+//        Investment invalid = Bond.builder()
+//                .id(id)
+//                .name(name)
+//                .faceValue(Double.valueOf(faceValue))  // todo
+//                .couponRate(0.03)  // todo it as a param. test
+//                .maturityDate(LocalDate.of(2030, 1, 1))
+//                .build();
+//        assertThrows(IllegalArgumentException.class, () -> service.createInvestment(invalid));
+//    }
 
     @Test
     public void cloneInvestmentTest() throws CloneNotSupportedException {

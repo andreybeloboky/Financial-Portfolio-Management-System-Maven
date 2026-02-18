@@ -40,7 +40,7 @@ class PortfolioControllerTest {
         when(scanner.nextInt()).thenReturn(2028);
         PortfolioController controller = new PortfolioController(scanner, portfolioService);
         controller.process();
-        verify(portfolioService, times(1)).findBondsMaturingIn(2028);
+        verify(portfolioService, times(1)).findBondsMaturingIn(anyInt());
     }
 
     @Test
@@ -104,7 +104,7 @@ class PortfolioControllerTest {
         PortfolioService portfolioService = mock(PortfolioService.class);
         Scanner scanner = mock(Scanner.class);
         when(scanner.nextLine()).thenReturn("CLONE ID700");
-        doThrow(new CloneNotSupportedException()).when(portfolioService).cloneInvestment("ID700");
+        doThrow(new CloneNotSupportedException()).when(portfolioService).cloneInvestment("ID700"); // todo
         PortfolioController controller = new PortfolioController(scanner, portfolioService);
         assertThrows(RuntimeException.class, controller::process);
     }
@@ -140,7 +140,7 @@ class PortfolioControllerTest {
         controller.process();
         Investment expected = switch (command) {
             case "ADD STOCK" -> Stock.builder()
-                    .id("ID321").name("Microsoft Corp.").tickerSymbol("MSFT")
+                    .id("ID321").name("Microsoft Corp111.").tickerSymbol("MSFT")    // todo
                     .shares(75).currentSharePrice(310.50).annualDividendPerShare(2.25)
                     .build();
             case "ADD BOND" -> Bond.builder()

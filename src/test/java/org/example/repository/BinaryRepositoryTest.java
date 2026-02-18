@@ -1,5 +1,7 @@
 package org.example.repository;
 
+import org.example.exception.IncorrectLoadException;
+import org.example.exception.IncorrectSaveException;
 import org.example.model.Investment;
 import org.example.model.Stock;
 import org.junit.jupiter.api.Test;
