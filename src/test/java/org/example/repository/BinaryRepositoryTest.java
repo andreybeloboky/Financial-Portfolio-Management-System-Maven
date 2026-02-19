@@ -45,7 +45,7 @@ class BinaryRepositoryTest {
     public void saveStateTest() throws Exception {
         File filePath = new File("src/test/resources/portfolioForSaveTest.ser");
         Investment inv = Stock.builder()
-                .id("ID1")
+                .id(1)
                 .name("Test Stock")
                 .tickerSymbol("TST")
                 .shares(10)

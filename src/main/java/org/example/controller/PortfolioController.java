@@ -33,24 +33,24 @@ public class PortfolioController {
                 InvestmentType investmentType = InvestmentType.valueOf(splitCommand[1].toUpperCase());
                 switch (investmentType) {
                     case STOCK -> {
-                        Stock newInvestment = Stock.builder().id("ID321").name("Microsoft Corp.").tickerSymbol("MSFT")
+                        Stock newInvestment = Stock.builder().id(321).name("Microsoft Corp.").tickerSymbol("MSFT")
                                 .shares(75).currentSharePrice(310.50).annualDividendPerShare(2.25).build();
                         service.createInvestment(newInvestment);
                     }
                     case BOND -> {
-                        Bond newInvestment = Bond.builder().id("ID654").name("Corporate Bond XYZ").faceValue(5000)
+                        Bond newInvestment = Bond.builder().id(654).name("Corporate Bond XYZ").faceValue(5000)
                                 .couponRate(0.045).maturityDate(LocalDate.of(2028, 6, 30)).build();
                         service.createInvestment(newInvestment);
                     }
                     case MUTUAL_FUND -> {
-                        MutualFund newInvestment = MutualFund.builder().id("ID987").name("Emerging Markets Fund").fundCode("EMF456")
+                        MutualFund newInvestment = MutualFund.builder().id(987).name("Emerging Markets Fund").fundCode("EMF456")
                                 .currentNAV(1200.75).avgAnnualDistribution(18.40).unitsHeld(0.95).build();
                         service.createInvestment(newInvestment);
                     }
                 }
                 break;
             case LIST:
-                List<Investment> allPortfolio = service.takeAllInvestments();
+               /* List<Investment> allPortfolio = service.takeAllInvestments();
                 for (Investment investment : allPortfolio) {
                     switch (investment) {
                         case Bond bond ->
@@ -62,31 +62,35 @@ public class PortfolioController {
                         default -> throw new IllegalStateException(INCORRECT_MESSAGE.formatted(investment));
                     }
                 }
+
+                */
                 break;
             case CLONE:
-                String id = splitCommand[1];
+                /*String id = splitCommand[1];
                 try {
                     service.cloneInvestment(id);
                 } catch (CloneNotSupportedException e) {
                     throw new RuntimeException(e); // todo unique exception
                 }
                 break;
+
+                 */
             case REPORT:
                 CommandReport commandReport = CommandReport.valueOf(splitCommand[1].toUpperCase());
                 switch (commandReport) {
-                    case VALUE -> System.out.println(service.calculateTotalPortfolioValue());
-                    case RETURN -> System.out.println(service.calculateTotalProjectedAnnualReturn());
+                   // case VALUE -> System.out.println(service.calculateTotalPortfolioValue());
+                   // case RETURN -> System.out.println(service.calculateTotalProjectedAnnualReturn());
                     case HIGHEST -> {
-                        Investment highestValueAsset = service.findHighestValueAsset();
-                        System.out.println(highestValueAsset.getName());
+                    //    Investment highestValueAsset = service.findHighestValueAsset();
+                     //   System.out.println(highestValueAsset.getName());
                     }
                     case ALLOCATION -> {
-                        Map<InvestmentType, Double> assetAllocationByType = service.findAssetAllocationByType();
-                        for (Map.Entry<InvestmentType, Double> entry : assetAllocationByType.entrySet()) {
-                            System.out.printf(VALUE.formatted(entry.getKey(), entry.getValue()));
+                    //    Map<InvestmentType, Double> assetAllocationByType = service.findAssetAllocationByType();
+                    //    for (Map.Entry<InvestmentType, Double> entry : assetAllocationByType.entrySet()) {
+                     //       System.out.printf(VALUE.formatted(entry.getKey(), entry.getValue()));
                         }
                     }
-                    case YEAR -> {
+                 /*   case YEAR -> {
                         System.out.println(ENTER_YEAR_MESSAGE);
                         int year = scanner.nextInt();
                         List<Investment> bondInvestment = service.findBondsMaturingIn(year);
@@ -103,6 +107,8 @@ public class PortfolioController {
             case EXIT:
                 System.out.println(EXIT_MESSAGE);
                 break;
+
+                  */
         }
     }
 }

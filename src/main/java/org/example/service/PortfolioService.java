@@ -8,6 +8,7 @@ import org.example.repository.BinaryRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -19,7 +20,7 @@ public class PortfolioService {
 
     private final BinaryRepository repository;
 
-    public double calculateTotalPortfolioValue() {
+ /*   public double calculateTotalPortfolioValue() {
         logger.debug("Calculating total portfolio value");
         List<Investment> portfolio = takeAllInvestments();
         double totalSum = 0;
@@ -97,15 +98,18 @@ public class PortfolioService {
         return investment;
     }
 
+
+  */
     public void createInvestment(Investment newInvestment) {
         Validate.notBlank(newInvestment.getName(), "Name cannot be empty");
-        List<Investment> portfolio = repository.loadState();
-        portfolio.add(newInvestment);
-        Collections.sort(portfolio);
-        repository.saveState(portfolio);
+        try {
+            repository.add(newInvestment);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
         logger.info("Investment created: {}, {}", newInvestment.getId(), newInvestment.getName());
     }
-
+/*
     public List<Investment> takeAllInvestments() {
         logger.debug("Loading all investments from repository");
         List<Investment> portfolio = repository.loadState();
@@ -129,4 +133,6 @@ public class PortfolioService {
         repository.saveState(portfolio);
         logger.info("Investment cloned: {}, {}", investmentClone.getId(), investmentClone.getName());
     }
+
+ */
 }
