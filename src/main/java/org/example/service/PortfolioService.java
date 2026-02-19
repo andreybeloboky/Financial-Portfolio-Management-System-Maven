@@ -3,6 +3,7 @@ package org.example.service;
 
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.Validate;
+import org.example.exception.IncorrectSQLInputException;
 import org.example.model.*;
 import org.example.repository.BinaryRepository;
 import org.slf4j.Logger;
@@ -20,7 +21,7 @@ public class PortfolioService {
 
     private final BinaryRepository repository;
 
- /*   public double calculateTotalPortfolioValue() {
+    public double calculateTotalPortfolioValue() {
         logger.debug("Calculating total portfolio value");
         List<Investment> portfolio = takeAllInvestments();
         double totalSum = 0;
@@ -99,7 +100,6 @@ public class PortfolioService {
     }
 
 
-  */
     public void createInvestment(Investment newInvestment) {
         Validate.notBlank(newInvestment.getName(), "Name cannot be empty");
         try {
@@ -109,30 +109,25 @@ public class PortfolioService {
         }
         logger.info("Investment created: {}, {}", newInvestment.getId(), newInvestment.getName());
     }
-/*
+
     public List<Investment> takeAllInvestments() {
         logger.debug("Loading all investments from repository");
-        List<Investment> portfolio = repository.loadState();
+        List<Investment> portfolio = repository.load();
         Collections.sort(portfolio);
         logger.debug("Loaded {} investments", portfolio.size());
         return portfolio;
     }
 
-    public void cloneInvestment(String id) throws CloneNotSupportedException {
-        List<Investment> portfolio = repository.loadState();
+    public void cloneInvestment(int id) throws CloneNotSupportedException {
+        List<Investment> portfolio = repository.load();
         Investment investmentClone = null;
         for (Investment investment : portfolio) {
-            if (investment.getId()
-                    .equals(id)) {
+            if (investment.getId() == id) {
                 investmentClone = (Investment) investment.clone();
             }
         }
         Objects.requireNonNull(investmentClone);
-        portfolio.add(investmentClone);
-        Collections.sort(portfolio);
-        repository.saveState(portfolio);
+        repository.add(investmentClone);
         logger.info("Investment cloned: {}, {}", investmentClone.getId(), investmentClone.getName());
     }
-
- */
 }

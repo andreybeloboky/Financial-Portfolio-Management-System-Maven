@@ -1,7 +1,6 @@
 package org.example.controller;
 
 import org.example.model.*;
-import org.example.repository.BinaryRepository;
 import org.example.service.PortfolioService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -32,7 +31,7 @@ class PortfolioControllerTest {
     @Test
     public void controllerFindBondsMaturingInTest() {
         PortfolioService portfolioService = mock(PortfolioService.class);
-        Investment fakeInvestment = Bond.builder().id("ID654").name("Corporate Bond XYZ").faceValue(5000)
+        Investment fakeInvestment = Bond.builder().id(654).name("Corporate Bond XYZ").faceValue(5000)
                 .couponRate(0.045).maturityDate(LocalDate.of(2028, 6, 30)).build();
         when(portfolioService.findBondsMaturingIn(2028)).thenReturn(Collections.singletonList(fakeInvestment));
         Scanner scanner = mock(Scanner.class);
@@ -69,7 +68,7 @@ class PortfolioControllerTest {
     @Test
     public void findHighestValueAssetTest() {
         PortfolioService portfolioService = mock(PortfolioService.class);
-        Investment fakeInvestment = Bond.builder().id("ID654").name("Corporate Bond XYZ").faceValue(5000)
+        Investment fakeInvestment = Bond.builder().id(654).name("Corporate Bond XYZ").faceValue(5000)
                 .couponRate(0.045).maturityDate(LocalDate.of(2028, 6, 30)).build();
         when(portfolioService.findHighestValueAsset()).thenReturn(fakeInvestment);
         Scanner scanner = mock(Scanner.class);
@@ -96,7 +95,7 @@ class PortfolioControllerTest {
         when(scanner.nextLine()).thenReturn("CLONE ID654");
         PortfolioController controller = new PortfolioController(scanner, portfolioService);
         controller.process();
-        verify(portfolioService, times(1)).cloneInvestment("ID654");
+        verify(portfolioService, times(1)).cloneInvestment(654);
     }
 
     @Test
@@ -104,7 +103,7 @@ class PortfolioControllerTest {
         PortfolioService portfolioService = mock(PortfolioService.class);
         Scanner scanner = mock(Scanner.class);
         when(scanner.nextLine()).thenReturn("CLONE ID700");
-        doThrow(new CloneNotSupportedException()).when(portfolioService).cloneInvestment("ID700"); // todo
+        doThrow(new CloneNotSupportedException()).when(portfolioService).cloneInvestment(700); // todo
         PortfolioController controller = new PortfolioController(scanner, portfolioService);
         assertThrows(RuntimeException.class, controller::process);
     }
@@ -113,11 +112,11 @@ class PortfolioControllerTest {
     public void getAllInvestmentsTest() {
         PortfolioService portfolioService = mock(PortfolioService.class);
         List<Investment> fakeInvestments = new ArrayList<>();
-        Investment fakeBondInvestment = Bond.builder().id("ID654").name("Corporate Bond XYZ").faceValue(5000)
+        Investment fakeBondInvestment = Bond.builder().id(654).name("Corporate Bond XYZ").faceValue(5000)
                 .couponRate(0.045).maturityDate(LocalDate.of(2028, 6, 30)).build();
-        Investment fakeMutualFundInvestment = MutualFund.builder().id("ID987").name("Emerging Markets Fund").fundCode("EMF456")
+        Investment fakeMutualFundInvestment = MutualFund.builder().id(987).name("Emerging Markets Fund").fundCode("EMF456")
                 .currentNAV(1200.75).avgAnnualDistribution(18.40).unitsHeld(0.95).build();
-        Investment fakeStockInvestment = Stock.builder().id("ID321").name("Microsoft Corp.").tickerSymbol("MSFT")
+        Investment fakeStockInvestment = Stock.builder().id(321).name("Microsoft Corp.").tickerSymbol("MSFT")
                 .shares(75).currentSharePrice(310.50).annualDividendPerShare(2.25).build();
         fakeInvestments.add(fakeBondInvestment);
         fakeInvestments.add(fakeMutualFundInvestment);
@@ -140,15 +139,15 @@ class PortfolioControllerTest {
         controller.process();
         Investment expected = switch (command) {
             case "ADD STOCK" -> Stock.builder()
-                    .id("ID321").name("Microsoft Corp111.").tickerSymbol("MSFT")    // todo
+                    .id(321).name("Microsoft Corp111.").tickerSymbol("MSFT")    // todo
                     .shares(75).currentSharePrice(310.50).annualDividendPerShare(2.25)
                     .build();
             case "ADD BOND" -> Bond.builder()
-                    .id("ID654").name("Corporate Bond XYZ").faceValue(5000)
+                    .id(654).name("Corporate Bond XYZ").faceValue(5000)
                     .couponRate(0.045).maturityDate(LocalDate.of(2028, 6, 30))
                     .build();
             case "ADD MUTUAL_FUND" -> MutualFund.builder()
-                    .id("ID987").name("Emerging Markets Fund").fundCode("EMF456")
+                    .id(987).name("Emerging Markets Fund").fundCode("EMF456")
                     .currentNAV(1200.75).avgAnnualDistribution(18.40).unitsHeld(0.95)
                     .build();
             default -> throw new IllegalArgumentException("Unknown command");
