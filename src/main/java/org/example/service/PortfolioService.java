@@ -3,13 +3,11 @@ package org.example.service;
 
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.Validate;
-import org.example.exception.IncorrectSQLInputException;
 import org.example.model.*;
 import org.example.repository.BinaryRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -102,11 +100,7 @@ public class PortfolioService {
 
     public void createInvestment(Investment newInvestment) {
         Validate.notBlank(newInvestment.getName(), "Name cannot be empty");
-        try {
-            repository.add(newInvestment);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        repository.add(newInvestment);
         logger.info("Investment created: {}, {}", newInvestment.getId(), newInvestment.getName());
     }
 
@@ -126,8 +120,31 @@ public class PortfolioService {
                 investmentClone = (Investment) investment.clone();
             }
         }
-        Objects.requireNonNull(investmentClone);
-        repository.add(investmentClone);
+        Investment uniqueClone = uniqueId(investmentClone, portfolio);
+        Objects.requireNonNull(uniqueClone);
+        repository.add(uniqueClone);
         logger.info("Investment cloned: {}, {}", investmentClone.getId(), investmentClone.getName());
+    }
+
+
+    private Investment uniqueId(Investment clone, List<Investment> list) {
+        List<Integer> id = new ArrayList<>();
+        for (Investment investment : list) {
+            switch (investment) {
+                case Bond bond -> id.add(bond.getId());
+                case Stock stock -> id.add(stock.getId());
+                case MutualFund mutualFund -> id.add(mutualFund.getId());
+                default -> throw new IllegalStateException(INCORRECT_MESSAGE.formatted(investment));
+            }
+        }
+        int newId = 1;
+        for (Integer i : id) {
+            if (newId != i) {
+                clone.setId(newId);
+            } else {
+                newId++;
+            }
+        }
+        return clone;
     }
 }
