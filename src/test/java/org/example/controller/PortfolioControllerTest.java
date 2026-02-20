@@ -140,21 +140,17 @@ class PortfolioControllerTest {
         PortfolioController controller = new PortfolioController(scanner, portfolioService);
         controller.process();
         Investment expected = switch (command) {
-            case "ADD STOCK" -> Stock.builder()
-                    .name("Microsoft Corp111.").tickerSymbol("MSFT")    // todo
-                    .shares(75).currentSharePrice(310.50).annualDividendPerShare(2.25)
-                    .build();
-            case "ADD BOND" -> Bond.builder()
-                    .name("Corporate Bond XYZ").faceValue(5000)
-                    .couponRate(0.045).maturityDate(LocalDate.of(2028, 6, 30))
-                    .build();
-            case "ADD MUTUAL_FUND" -> MutualFund.builder()
-                    .name("Emerging Markets Fund").fundCode("EMF456")
-                    .currentNAV(1200.75).avgAnnualDistribution(18.40).unitsHeld(0.95)
-                    .build();
+            case "ADD STOCK" ->
+                    Stock.builder().name("Microsoft Corp.").tickerSymbol("MSFT").shares(75)
+                            .currentSharePrice(310.50).annualDividendPerShare(2.25).build();
+            case "ADD BOND" ->
+                    Bond.builder().name("Corporate Bond XYZ").faceValue(5000).couponRate(0.05)
+                            .maturityDate(LocalDate.of(2028, 6, 30)).build();
+            case "ADD MUTUAL_FUND" ->
+                    MutualFund.builder().name("Emerging Markets Fund").fundCode("EMF456").currentNAV(1200.75)
+                            .unitsHeld(0.95).avgAnnualDistribution(18.40).build();
             default -> throw new IllegalArgumentException("Unknown command");
         };
         verify(portfolioService).createInvestment(expected);
     }
-
 }

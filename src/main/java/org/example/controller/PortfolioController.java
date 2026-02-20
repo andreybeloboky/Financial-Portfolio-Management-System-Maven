@@ -34,13 +34,13 @@ public class PortfolioController {
                 InvestmentType investmentType = InvestmentType.valueOf(splitCommand[1].toUpperCase());
                 switch (investmentType) {
                     case STOCK -> {
-                        Stock newInvestment = Stock.builder().name("Golden Apple Corp.").tickerSymbol("MSFT")
-                                .shares(75).currentSharePrice(310.50).annualDividendPerShare(3.25).build();
+                        Stock newInvestment = Stock.builder().name("Microsoft Corp.").tickerSymbol("MSFT")
+                                .shares(75).currentSharePrice(310.50).annualDividendPerShare(2.25).build();
                         service.createInvestment(newInvestment);
                     }
                     case BOND -> {
                         Bond newInvestment = Bond.builder().name("Corporate Bond XYZ").faceValue(5000)
-                                .couponRate(1.045).maturityDate(LocalDate.of(2028, 6, 30)).build();
+                                .couponRate(0.05).maturityDate(LocalDate.of(2028, 6, 30)).build();
                         service.createInvestment(newInvestment);
                     }
                     case MUTUAL_FUND -> {

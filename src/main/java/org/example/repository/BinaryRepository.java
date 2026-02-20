@@ -20,11 +20,6 @@ public class BinaryRepository {
     private static final String INSERT_BONDS = "INSERT INTO bonds(id_investment, face_value,coupon_rate,local_date) VALUES (?,?,?,?)";
     private static final String INSERT_STOCK = "INSERT INTO stocks(id_investment, ticker_symbol,shares,current_share_price, annual_dividend_per_share) VALUES (?,?,?,?,?)";
     private static final String INSERT_MUTUAL_FUND = "INSERT INTO mutual_funds(id_investment, fund_code,units_held,current_nav, avg_annual_distribution) VALUES (?,?,?,?,?)";
-    /*
-    private static final String SELECT_BONDS = "SELECT * FROM bonds b LEFT JOIN investments i ON i.id = b.id_investment";
-    private static final String SELECT_STOCK = "SELECT * FROM stock s LEFT JOIN investments i ON i.id = s.id_investment";
-    private static final String SELECT_MUTUAL_FUND = "SELECT * FROM mutual_fund m LEFT JOIN investments i ON i.id = m.id_investment";
-    */
     private static final String SELECT = "select * from investments i left join bonds b2 on i.id =b2.id_investment " +
             "left join stocks s on i.id = s.id_investment " +
             "left join mutual_funds mf  on i.id=mf.id_investment " +
