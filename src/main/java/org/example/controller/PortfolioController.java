@@ -1,6 +1,7 @@
 package org.example.controller;
 
 import lombok.AllArgsConstructor;
+import org.example.exception.InvestmentCloneException;
 import org.example.model.*;
 import org.example.service.PortfolioService;
 
@@ -33,17 +34,17 @@ public class PortfolioController {
                 InvestmentType investmentType = InvestmentType.valueOf(splitCommand[1].toUpperCase());
                 switch (investmentType) {
                     case STOCK -> {
-                        Stock newInvestment = Stock.builder().id(321).name("Microsoft Corp.").tickerSymbol("MSFT")
-                                .shares(75).currentSharePrice(310.50).annualDividendPerShare(2.25).build();
+                        Stock newInvestment = Stock.builder().name("Microsoft Corp.").tickerSymbol("MSFT")
+                                .shares(75).currentSharePrice(310.50).annualDividendPerShare(3.25).build();
                         service.createInvestment(newInvestment);
                     }
                     case BOND -> {
-                        Bond newInvestment = Bond.builder().id(655).name("Corporate Bond XYZ").faceValue(5000)
-                                .couponRate(0.045).maturityDate(LocalDate.of(2028, 6, 30)).build();
+                        Bond newInvestment = Bond.builder().name("Corporate Bond XYZ").faceValue(5000)
+                                .couponRate(1.045).maturityDate(LocalDate.of(2028, 6, 30)).build();
                         service.createInvestment(newInvestment);
                     }
                     case MUTUAL_FUND -> {
-                        MutualFund newInvestment = MutualFund.builder().id(987).name("Emerging Markets Fund").fundCode("EMF456")
+                        MutualFund newInvestment = MutualFund.builder().name("Emerging Markets Fund").fundCode("EMF456")
                                 .currentNAV(1200.75).avgAnnualDistribution(18.40).unitsHeld(0.95).build();
                         service.createInvestment(newInvestment);
                     }
@@ -68,7 +69,7 @@ public class PortfolioController {
                 try {
                     service.cloneInvestment(id);
                 } catch (CloneNotSupportedException e) {
-                    throw new RuntimeException(e); // todo unique exception
+                    throw new InvestmentCloneException("Cannot clone investment with id " + id, e);
                 }
                 break;
             case REPORT:

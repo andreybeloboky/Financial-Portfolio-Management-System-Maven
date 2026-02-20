@@ -120,31 +120,8 @@ public class PortfolioService {
                 investmentClone = (Investment) investment.clone();
             }
         }
-        Investment uniqueClone = uniqueId(investmentClone, portfolio);
-        Objects.requireNonNull(uniqueClone);
-        repository.add(uniqueClone);
+        Objects.requireNonNull(investmentClone);
+        repository.add(investmentClone);
         logger.info("Investment cloned: {}, {}", investmentClone.getId(), investmentClone.getName());
-    }
-
-
-    private Investment uniqueId(Investment clone, List<Investment> list) {
-        List<Integer> id = new ArrayList<>();
-        for (Investment investment : list) {
-            switch (investment) {
-                case Bond bond -> id.add(bond.getId());
-                case Stock stock -> id.add(stock.getId());
-                case MutualFund mutualFund -> id.add(mutualFund.getId());
-                default -> throw new IllegalStateException(INCORRECT_MESSAGE.formatted(investment));
-            }
-        }
-        int newId = 1;
-        for (Integer i : id) {
-            if (newId != i) {
-                clone.setId(newId);
-            } else {
-                newId++;
-            }
-        }
-        return clone;
     }
 }

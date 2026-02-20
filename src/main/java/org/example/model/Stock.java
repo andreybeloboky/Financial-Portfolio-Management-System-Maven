@@ -15,8 +15,6 @@ public final class Stock extends Investment {
     private final int shares;
     private final double currentSharePrice;
     private final double annualDividendPerShare;
-    @Serial
-    private static final long serialVersionUID = 1L;
 
     @Override
     public double calculateCurrentValue() {

@@ -16,9 +16,6 @@ public final class MutualFund extends Investment {
     private final double currentNAV;
     private final double avgAnnualDistribution;
 
-    @Serial
-    private static final long serialVersionUID = 1L;
-
     @Override
     public double calculateCurrentValue() {
         return unitsHeld * currentNAV;
