@@ -92,7 +92,8 @@ class PortfolioControllerTest {
     public void cloneInvestmentTest() throws CloneNotSupportedException {
         PortfolioService portfolioService = mock(PortfolioService.class);
         Scanner scanner = mock(Scanner.class);
-        when(scanner.nextLine()).thenReturn("CLONE ID654");
+        when(scanner.nextLine()).thenReturn("CLONE");
+        when(scanner.nextInt()).thenReturn(654);
         PortfolioController controller = new PortfolioController(scanner, portfolioService);
         controller.process();
         verify(portfolioService, times(1)).cloneInvestment(654);
@@ -102,7 +103,8 @@ class PortfolioControllerTest {
     public void cloneInvestmentExceptionTest() throws CloneNotSupportedException {
         PortfolioService portfolioService = mock(PortfolioService.class);
         Scanner scanner = mock(Scanner.class);
-        when(scanner.nextLine()).thenReturn("CLONE ID700");
+        when(scanner.nextLine()).thenReturn("CLONE");
+        when(scanner.nextInt()).thenReturn(700);
         doThrow(new CloneNotSupportedException()).when(portfolioService).cloneInvestment(700); // todo
         PortfolioController controller = new PortfolioController(scanner, portfolioService);
         assertThrows(RuntimeException.class, controller::process);
@@ -139,15 +141,15 @@ class PortfolioControllerTest {
         controller.process();
         Investment expected = switch (command) {
             case "ADD STOCK" -> Stock.builder()
-                    .id(321).name("Microsoft Corp111.").tickerSymbol("MSFT")    // todo
+                    .name("Microsoft Corp111.").tickerSymbol("MSFT")    // todo
                     .shares(75).currentSharePrice(310.50).annualDividendPerShare(2.25)
                     .build();
             case "ADD BOND" -> Bond.builder()
-                    .id(654).name("Corporate Bond XYZ").faceValue(5000)
+                    .name("Corporate Bond XYZ").faceValue(5000)
                     .couponRate(0.045).maturityDate(LocalDate.of(2028, 6, 30))
                     .build();
             case "ADD MUTUAL_FUND" -> MutualFund.builder()
-                    .id(987).name("Emerging Markets Fund").fundCode("EMF456")
+                    .name("Emerging Markets Fund").fundCode("EMF456")
                     .currentNAV(1200.75).avgAnnualDistribution(18.40).unitsHeld(0.95)
                     .build();
             default -> throw new IllegalArgumentException("Unknown command");

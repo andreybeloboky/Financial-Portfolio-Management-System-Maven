@@ -12,7 +12,7 @@ import java.io.Serializable;
 @SuperBuilder
 @EqualsAndHashCode(callSuper = false)
 public abstract sealed class Investment implements Cloneable, Serializable, Comparable<Investment> permits Stock, Bond, MutualFund {
-    protected final int id;
+    protected final Integer id;
     protected final String name;
 
     public abstract double calculateCurrentValue();
@@ -27,7 +27,7 @@ public abstract sealed class Investment implements Cloneable, Serializable, Comp
     @Override
     public int compareTo(Investment o) {
         if (Double.compare(calculateCurrentValue(), o.calculateCurrentValue()) == 0) {
-            return this.name.compareTo(o.name);
+            return this.id.compareTo(o.id);
         } else {
             return Double.compare(calculateCurrentValue(), o.calculateCurrentValue());
         }

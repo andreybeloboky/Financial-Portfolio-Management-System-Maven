@@ -34,7 +34,7 @@ public class PortfolioController {
                 InvestmentType investmentType = InvestmentType.valueOf(splitCommand[1].toUpperCase());
                 switch (investmentType) {
                     case STOCK -> {
-                        Stock newInvestment = Stock.builder().name("Microsoft Corp.").tickerSymbol("MSFT")
+                        Stock newInvestment = Stock.builder().name("Golden Apple Corp.").tickerSymbol("MSFT")
                                 .shares(75).currentSharePrice(310.50).annualDividendPerShare(3.25).build();
                         service.createInvestment(newInvestment);
                     }

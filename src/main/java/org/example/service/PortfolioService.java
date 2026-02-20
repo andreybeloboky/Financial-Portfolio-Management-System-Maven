@@ -101,13 +101,12 @@ public class PortfolioService {
     public void createInvestment(Investment newInvestment) {
         Validate.notBlank(newInvestment.getName(), "Name cannot be empty");
         repository.add(newInvestment);
-        logger.info("Investment created: {}, {}", newInvestment.getId(), newInvestment.getName());
+        logger.info("Investment created: {}", newInvestment.getName());
     }
 
     public List<Investment> takeAllInvestments() {
         logger.debug("Loading all investments from repository");
         List<Investment> portfolio = repository.load();
-        Collections.sort(portfolio);
         logger.debug("Loaded {} investments", portfolio.size());
         return portfolio;
     }
