@@ -2,10 +2,8 @@ package org.example.model;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import lombok.experimental.SuperBuilder;
 
-import java.io.Serial;
 import java.io.Serializable;
 
 @Data
@@ -18,6 +16,8 @@ public abstract sealed class Investment implements Cloneable, Serializable, Comp
     public abstract double calculateCurrentValue();
 
     public abstract double getProjectedAnnualReturn();
+
+    public abstract void validate();
 
     @Override
     public Object clone() throws CloneNotSupportedException {

@@ -25,4 +25,11 @@ public final class Stock extends Investment {
     public double getProjectedAnnualReturn() {
         return shares * annualDividendPerShare;
     }
+
+    @Override
+    public void validate() {
+        if(shares<0) throw new IllegalArgumentException("Shares must be positive");
+        if(currentSharePrice<0) throw new IllegalArgumentException("Current share price must be positive");
+        if(annualDividendPerShare<0) throw new IllegalArgumentException("Annual dividend per share must be positive");
+    }
 }

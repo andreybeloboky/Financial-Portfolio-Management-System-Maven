@@ -2,12 +2,9 @@ package org.example.model;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.RequiredArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-import java.io.Serial;
 import java.time.LocalDate;
-import java.util.Objects;
 
 @Data
 @SuperBuilder
@@ -18,9 +15,6 @@ public final class Bond extends Investment {
     private final double couponRate;
     private final LocalDate maturityDate;
 
-    @Serial
-    private static final long serialVersionUID = 1L;
-
     @Override
     public double calculateCurrentValue() {
         return faceValue;
@@ -29,5 +23,11 @@ public final class Bond extends Investment {
     @Override
     public double getProjectedAnnualReturn() {
         return faceValue * couponRate;
+    }
+
+    @Override
+    public void validate() {
+        if(faceValue<0) throw new IllegalArgumentException("Face value must be positive");
+        if(couponRate<0) throw new IllegalArgumentException("Coupon rate must be positive");
     }
 }

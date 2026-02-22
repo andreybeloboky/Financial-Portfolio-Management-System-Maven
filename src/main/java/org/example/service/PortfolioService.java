@@ -100,6 +100,7 @@ public class PortfolioService {
 
     public void createInvestment(Investment newInvestment) {
         Validate.notBlank(newInvestment.getName(), "Name cannot be empty");
+        newInvestment.validate();
         repository.add(newInvestment);
         logger.info("Investment created: {}", newInvestment.getName());
     }

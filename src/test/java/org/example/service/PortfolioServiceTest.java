@@ -5,14 +5,12 @@ import org.example.repository.BinaryRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 
 import java.time.LocalDate;
 import java.util.*;
 
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
@@ -32,7 +30,7 @@ public class PortfolioServiceTest {
         double totalValue = service.calculateTotalPortfolioValue();
         assertEquals(29428.2125, totalValue);
     }
-/*
+
     @Test
     public void calculateTotalProjectedAnnualReturnTest() {
         BinaryRepository mock = mock(BinaryRepository.class);
@@ -61,7 +59,7 @@ public class PortfolioServiceTest {
         assertEquals(3, allocationMap.size());
         assertEquals(23287.5, allocationMap.get(InvestmentType.STOCK));
         assertEquals(12.0, allocationMap.get(InvestmentType.BOND));
-        assertEquals(2281.4249999999997, allocationMap.get(InvestmentType.MUTUAL_FUND));
+        assertEquals(1.9, allocationMap.get(InvestmentType.MUTUAL_FUND));
     }
 
     @Test
@@ -111,17 +109,13 @@ public class PortfolioServiceTest {
         PortfolioService service = new PortfolioService(mock);
         List<Investment> investments = service.takeAllInvestments();
         assertEquals(2, investments.size());
-        assertEquals("ID654", investments.get(0).getId());
-        assertEquals("Microsoft Corp.", investments.get(1).getName());
+        assertEquals(Integer.valueOf(321), investments.get(0).getId());
+        assertEquals("Corporate Bond XYZ", investments.get(1).getName());
     }
 
     @Test
     public void createInvestmentTest() {
         BinaryRepository mockRepo = mock(BinaryRepository.class);
-        when(mockRepo.load()).thenReturn(new ArrayList<>(Arrays.asList(Stock.builder().id(321).name("Microsoft Corp.").tickerSymbol("MSFT")
-                        .shares(75).currentSharePrice(310.50).annualDividendPerShare(2.25).build(),
-                Bond.builder().id(654).name("Corporate Bond XYZ").faceValue(5000)
-                        .couponRate(0.045).maturityDate(LocalDate.of(2028, 6, 30)).build())));
         PortfolioService service = new PortfolioService(mockRepo);
         Investment newBond = Bond.builder()
                 .id(156)
@@ -131,32 +125,28 @@ public class PortfolioServiceTest {
                 .maturityDate(LocalDate.of(2028, 6, 30))
                 .build();
         service.createInvestment(newBond);
-        ArgumentCaptor<List<Investment>> captor = ArgumentCaptor.forClass(List.class);
-        verify(mockRepo).saveState(captor.capture());
-        List<Investment> savedList = captor.getValue();
-        assertEquals(3, savedList.size());
-        assertTrue(savedList.contains(newBond));
-        List<Investment> sortedCopy = new ArrayList<>(savedList);
-        Collections.sort(sortedCopy);
-        assertEquals(sortedCopy, savedList);
-        verify(mockRepo, times(1)).load();
-        verify(mockRepo,times(1)).saveState(captor.capture());
+        ArgumentCaptor<Investment> captor = ArgumentCaptor.forClass(Investment.class);
+        verify(mockRepo).add(captor.capture());
+        Investment saved = captor.getValue();
+        assertEquals(Integer.valueOf(156), saved.getId());
+        assertEquals(225.0, saved.getProjectedAnnualReturn());
+        verify(mockRepo, times(1)).add(captor.capture());
     }
 
-//    @ParameterizedTest
-//    @CsvSource Source( {"id", "name", "-1"}, {"id", "", "100"))
-//    public void createInvestmentInvalidTest(String  id, String name, String faceValue) {
-//        BinaryRepository mockRepo = mock(BinaryRepository.class);
-//        PortfolioService service = new PortfolioService(mockRepo);
-//        Investment invalid = Bond.builder()
-//                .id(id)
-//                .name(name)
-//                .faceValue(Double.valueOf(faceValue))  // todo
-//                .couponRate(0.03)  // todo it as a param. test
-//                .maturityDate(LocalDate.of(2030, 1, 1))
-//                .build();
-//        assertThrows(IllegalArgumentException.class, () -> service.createInvestment(invalid));
-//    }
+    @ParameterizedTest
+    @CsvSource(value = {"'', 1.1,1.0,2028-01-01",
+            "Amazon, -1.0, 19.1,2021-01-01"})
+    public void createInvestmentInvalidTest(String name, Double faceValue, Double couponRate, LocalDate maturityDate) {
+        BinaryRepository mockRepo = mock(BinaryRepository.class);
+        PortfolioService service = new PortfolioService(mockRepo);
+        Investment invalid = Bond.builder()
+                .name(name)
+                .faceValue(faceValue)
+                .couponRate(couponRate)
+                .maturityDate(maturityDate)
+                .build();
+        assertThrows(IllegalArgumentException.class, () -> service.createInvestment(invalid));
+    }
 
     @Test
     public void cloneInvestmentTest() throws CloneNotSupportedException {
@@ -165,13 +155,13 @@ public class PortfolioServiceTest {
                 .shares(75).currentSharePrice(310.50).annualDividendPerShare(2.25).build())));
         PortfolioService service = new PortfolioService(mock);
         service.cloneInvestment(321);
-        ArgumentCaptor<List<Investment>> captor = ArgumentCaptor.forClass(List.class);
-        verify(mock).saveState(captor.capture());
-        List<Investment> savedList = captor.getValue();
-        assertEquals(2, savedList.size());
-        assertEquals(savedList.getFirst().getId(), savedList.getLast().getId());
-        verify(mock).load();
-        verify(mock).saveState(captor.capture());
+        ArgumentCaptor<Investment> captor = ArgumentCaptor.forClass(Investment.class);
+        verify(mock).add(captor.capture());
+        Investment cloneInvestment = captor.getValue();
+        assertEquals(Integer.valueOf(321), cloneInvestment.getId());
+        assertEquals("Microsoft Corp.", cloneInvestment.getName());
+        assertEquals(168.75, cloneInvestment.getProjectedAnnualReturn());
+        verify(mock).add(captor.capture());
     }
 
     @Test
@@ -181,8 +171,6 @@ public class PortfolioServiceTest {
                 .shares(75).currentSharePrice(310.50).annualDividendPerShare(2.25).build())));
         PortfolioService service = new PortfolioService(mock);
         assertThrows(NullPointerException.class, () -> service.cloneInvestment(600));
-        verify(mock).loadState();
+        verify(mock).load();
     }
-
- */
 }
