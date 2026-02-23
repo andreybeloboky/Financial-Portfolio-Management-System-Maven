@@ -4,10 +4,6 @@ import org.example.model.*;
 import org.example.repository.BinaryRepository;
 import org.example.service.PortfolioService;
 
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 import java.util.Scanner;
 
 public class Main {
