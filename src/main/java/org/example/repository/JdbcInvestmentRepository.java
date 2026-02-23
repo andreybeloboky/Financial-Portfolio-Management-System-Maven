@@ -71,24 +71,20 @@ public class JdbcInvestmentRepository {
     }
 
     public void add(Investment investment) {
-        Connection conn = openConnection();
-        try {
+        try (Connection conn = openConnection()) {
             conn.setAutoCommit(false);
-            int id = insertInvestment(conn, investment);
-            insertSpecific(conn, investment, id);
-            conn.commit();
-            log.info("Transaction commited");
-            conn.close();
-        } catch (SQLException e) {
             try {
+                int id = insertInvestment(conn, investment);
+                insertSpecific(conn, investment, id);
+                conn.commit();
+                log.info("Transaction committed");
+            } catch (SQLException e) {
                 conn.rollback();
-                conn.close();
-            } catch (SQLException ex) {
-                log.warn("Rollback failed after SQL exception", ex);
-                throw new RuntimeException(ex);
+                log.warn("SQL exception occurred, transaction rolled back", e);
+                throw new IncorrectSQLInputException("Failed to insert investment into database", e);
             }
-            log.warn("SQL exception occurred during insert operation");
-            throw new IncorrectSQLInputException("Failed to insert investment into database", e);
+        } catch (SQLException e) {
+            throw new RuntimeException("Database connection error", e);
         }
     }
 
@@ -101,8 +97,11 @@ public class JdbcInvestmentRepository {
                 case MutualFund ignored -> ps.setString(2, "MUTUAL_FUND");
             }
             try (ResultSet rs = ps.executeQuery()) {
-                rs.next();
-                return rs.getInt("id");
+                if (rs.next()) {
+                    return rs.getInt("id");
+                } else {
+                    throw new SQLException("Creating investment failed, no ID obtained.");
+                }
             }
         }
     }
