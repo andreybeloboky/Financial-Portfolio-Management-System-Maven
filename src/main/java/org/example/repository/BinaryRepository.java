@@ -1,14 +1,10 @@
 package org.example.repository;
 
 import org.example.exception.IncorrectSQLInputException;
-import org.example.model.Bond;
-import org.example.model.Investment;
-import org.example.model.MutualFund;
-import org.example.model.Stock;
+import org.example.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
 import java.sql.*;
 import java.sql.Date;
 import java.util.*;
@@ -45,19 +41,19 @@ public class BinaryRepository {
         try (PreparedStatement preparedStatement = conn.prepareStatement(SELECT);
              ResultSet rs = preparedStatement.executeQuery()) {
             while (rs.next()) {
-                String type = rs.getString("type");
+                InvestmentType type = InvestmentType.valueOf(rs.getString("type"));
                 switch (type) {
-                    case "BOND" -> portfolio.add(Bond.builder().id(rs.getInt("id")).name(rs.getString("name"))
+                    case BOND -> portfolio.add(Bond.builder().id(rs.getInt("id")).name(rs.getString("name"))
                             .faceValue(rs.getDouble("face_value"))
                             .couponRate(rs.getDouble("coupon_rate"))
                             .maturityDate(rs.getDate("local_date").toLocalDate()).build());
-                    case "STOCK" -> portfolio.add(Stock.builder().id(rs.getInt("id")).name(rs.getString("name"))
+                    case STOCK -> portfolio.add(Stock.builder().id(rs.getInt("id")).name(rs.getString("name"))
                             .tickerSymbol(rs.getString("ticker_symbol"))
                             .shares(rs.getInt("shares"))
                             .currentSharePrice(rs.getDouble("current_share_price"))
                             .annualDividendPerShare(rs.getDouble("annual_dividend_per_share"))
                             .build());
-                    case "MUTUAL_FUND" -> portfolio.add(MutualFund.builder()
+                    case MUTUAL_FUND -> portfolio.add(MutualFund.builder()
                             .id(rs.getInt("id"))
                             .name(rs.getString("name"))
                             .fundCode(rs.getString("fund_code"))

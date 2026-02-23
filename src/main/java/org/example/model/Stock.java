@@ -1,10 +1,12 @@
 package org.example.model;
 
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
-@Data
+@Getter
+@ToString
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
 public final class Stock extends Investment {

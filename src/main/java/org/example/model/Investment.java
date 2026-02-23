@@ -1,15 +1,16 @@
 package org.example.model;
 
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
-import java.io.Serializable;
-
-@Data
+@Getter
+@ToString
 @SuperBuilder
 @EqualsAndHashCode(callSuper = false)
-public abstract sealed class Investment implements Cloneable, Serializable, Comparable<Investment> permits Stock, Bond, MutualFund {
+public abstract sealed class Investment implements Cloneable, Comparable<Investment> permits Stock, Bond, MutualFund {
+
     protected final Integer id;
     protected final String name;
 
