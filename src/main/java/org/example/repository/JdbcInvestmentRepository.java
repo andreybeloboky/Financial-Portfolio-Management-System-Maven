@@ -23,8 +23,7 @@ public class JdbcInvestmentRepository {
             LEFT JOIN mutual_funds mf ON i.id = mf.id_investment
             ORDER BY id
             """;
-
-    private static final String LOGIN =System.getenv("DB_LOGIN");
+    private static final String LOGIN = System.getenv("DB_LOGIN");
     private static final String PASSWORD = System.getenv("DB_PASSWORD");
     private static final String URL = System.getenv("DB_URL");
 
