@@ -1,7 +1,7 @@
 package org.example.service;
 
 import org.example.model.*;
-import org.example.repository.BinaryRepository;
+import org.example.repository.JdbcInvestmentRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -19,7 +19,7 @@ public class PortfolioServiceTest {
 
     @Test
     public void calculateTotalPortfolioValueTestMethod() {
-        BinaryRepository mock = mock(BinaryRepository.class);
+        JdbcInvestmentRepository mock = mock(JdbcInvestmentRepository.class);
         when(mock.load()).thenReturn(Arrays.asList(Stock.builder().id(321).name("Microsoft Corp.").tickerSymbol("MSFT")
                         .shares(75).currentSharePrice(310.50).annualDividendPerShare(2.25).build(),
                 Bond.builder().id(654).name("Corporate Bond XYZ").faceValue(5000)
@@ -33,7 +33,7 @@ public class PortfolioServiceTest {
 
     @Test
     public void calculateTotalProjectedAnnualReturnTest() {
-        BinaryRepository mock = mock(BinaryRepository.class);
+        JdbcInvestmentRepository mock = mock(JdbcInvestmentRepository.class);
         when(mock.load()).thenReturn(Arrays.asList(Stock.builder().id(321).name("Microsoft Corp.").tickerSymbol("MSFT")
                         .shares(75).currentSharePrice(310.50).annualDividendPerShare(2.25).build(),
                 Bond.builder().id(654).name("Corporate Bond XYZ").faceValue(5000)
@@ -45,7 +45,7 @@ public class PortfolioServiceTest {
 
     @Test
     public void findAssetAllocationByTypeTest() {
-        BinaryRepository mock = mock(BinaryRepository.class);
+        JdbcInvestmentRepository mock = mock(JdbcInvestmentRepository.class);
         when(mock.load()).thenReturn(Arrays.asList(Stock.builder().id(321).name("Microsoft Corp.").tickerSymbol("MSFT")
                         .shares(75).currentSharePrice(310.50).annualDividendPerShare(2.25).build(),
                 Bond.builder().id(654).name("Corporate Bond XYZ").faceValue(12)
@@ -64,7 +64,7 @@ public class PortfolioServiceTest {
 
     @Test
     public void findBondsMaturingInNoFoundTest() {
-        BinaryRepository mock = mock(BinaryRepository.class);
+        JdbcInvestmentRepository mock = mock(JdbcInvestmentRepository.class);
         when(mock.load()).thenReturn(Collections.singletonList(Bond.builder().id(654).name("Corporate Bond XYZ").faceValue(5000)
                 .couponRate(0.045).maturityDate(LocalDate.of(2028, 6, 30)).build()));
         PortfolioService service = new PortfolioService(mock);
@@ -74,7 +74,7 @@ public class PortfolioServiceTest {
 
     @Test
     public void findBondsMaturingInTest() {
-        BinaryRepository mock = mock(BinaryRepository.class);
+        JdbcInvestmentRepository mock = mock(JdbcInvestmentRepository.class);
         when(mock.load()).thenReturn(Arrays.asList(Bond.builder().id(654).name("Corporate Bond XYZ").faceValue(5000)
                         .couponRate(0.045).maturityDate(LocalDate.of(2003, 6, 30)).build(),
                 Bond.builder().id(654).name("Corporate Bond XYZXYZ").faceValue(5000)
@@ -89,7 +89,7 @@ public class PortfolioServiceTest {
 
     @Test
     public void findHighestValueAssetTest() {
-        BinaryRepository mock = mock(BinaryRepository.class);
+        JdbcInvestmentRepository mock = mock(JdbcInvestmentRepository.class);
         when(mock.load()).thenReturn(Arrays.asList(Stock.builder().id(321).name("Microsoft Corp.").tickerSymbol("MSFT")
                         .shares(75).currentSharePrice(310.50).annualDividendPerShare(2.25).build(),
                 Bond.builder().id(654).name("Corporate Bond XYZ").faceValue(5000)
@@ -101,7 +101,7 @@ public class PortfolioServiceTest {
 
     @Test
     public void takeAllInvestmentsTest() {
-        BinaryRepository mock = mock(BinaryRepository.class);
+        JdbcInvestmentRepository mock = mock(JdbcInvestmentRepository.class);
         when(mock.load()).thenReturn(Arrays.asList(Stock.builder().id(321).name("Microsoft Corp.").tickerSymbol("MSFT")
                         .shares(75).currentSharePrice(310.50).annualDividendPerShare(2.25).build(),
                 Bond.builder().id(654).name("Corporate Bond XYZ").faceValue(5000)
@@ -115,7 +115,7 @@ public class PortfolioServiceTest {
 
     @Test
     public void createInvestmentTest() {
-        BinaryRepository mockRepo = mock(BinaryRepository.class);
+        JdbcInvestmentRepository mockRepo = mock(JdbcInvestmentRepository.class);
         PortfolioService service = new PortfolioService(mockRepo);
         Investment newBond = Bond.builder()
                 .id(156)
@@ -137,7 +137,7 @@ public class PortfolioServiceTest {
     @CsvSource(value = {"'', 1.1,1.0,2028-01-01",
             "Amazon, -1.0, 19.1,2021-01-01"})
     public void createInvestmentInvalidTest(String name, Double faceValue, Double couponRate, LocalDate maturityDate) {
-        BinaryRepository mockRepo = mock(BinaryRepository.class);
+        JdbcInvestmentRepository mockRepo = mock(JdbcInvestmentRepository.class);
         PortfolioService service = new PortfolioService(mockRepo);
         Investment invalid = Bond.builder()
                 .name(name)
@@ -150,7 +150,7 @@ public class PortfolioServiceTest {
 
     @Test
     public void cloneInvestmentTest() throws CloneNotSupportedException {
-        BinaryRepository mock = mock(BinaryRepository.class);
+        JdbcInvestmentRepository mock = mock(JdbcInvestmentRepository.class);
         when(mock.load()).thenReturn(new ArrayList<>(Collections.singletonList(Stock.builder().id(321).name("Microsoft Corp.").tickerSymbol("MSFT")
                 .shares(75).currentSharePrice(310.50).annualDividendPerShare(2.25).build())));
         PortfolioService service = new PortfolioService(mock);
@@ -166,7 +166,7 @@ public class PortfolioServiceTest {
 
     @Test
     public void cloneInvestmentExceptionTest() {
-        BinaryRepository mock = mock(BinaryRepository.class);
+        JdbcInvestmentRepository mock = mock(JdbcInvestmentRepository.class);
         when(mock.load()).thenReturn(new ArrayList<>(Collections.singletonList(Stock.builder().id(321).name("Microsoft Corp.").tickerSymbol("MSFT")
                 .shares(75).currentSharePrice(310.50).annualDividendPerShare(2.25).build())));
         PortfolioService service = new PortfolioService(mock);

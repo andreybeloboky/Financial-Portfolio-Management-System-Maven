@@ -1,37 +1,41 @@
 package org.example.repository;
 
+import lombok.extern.slf4j.Slf4j;
 import org.example.exception.IncorrectSQLInputException;
 import org.example.model.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.sql.*;
 import java.sql.Date;
 import java.util.*;
 
-public class BinaryRepository {
+@Slf4j
+public class JdbcInvestmentRepository {
 
-    private static final Logger logger = LoggerFactory.getLogger(BinaryRepository.class);
     private static final String INSERT_INVESTMENT = "INSERT INTO investments(name,type) VALUES (?,?) RETURNING id";
     private static final String INSERT_BONDS = "INSERT INTO bonds(id_investment, face_value,coupon_rate,local_date) VALUES (?,?,?,?)";
     private static final String INSERT_STOCK = "INSERT INTO stocks(id_investment, ticker_symbol,shares,current_share_price, annual_dividend_per_share) VALUES (?,?,?,?,?)";
     private static final String INSERT_MUTUAL_FUND = "INSERT INTO mutual_funds(id_investment, fund_code,units_held,current_nav, avg_annual_distribution) VALUES (?,?,?,?,?)";
-    private static final String SELECT = "select * from investments i left join bonds b2 on i.id =b2.id_investment " +
-            "left join stocks s on i.id = s.id_investment " +
-            "left join mutual_funds mf  on i.id=mf.id_investment " +
-            "order by id";
-    private static final String LOGIN = "postgres";
-    private static final String PASSWORD = "mysecretpassword";
-    private static final String URL = "jdbc:postgresql://localhost:5433/postgres";
+    private static final String SELECT = """
+            SELECT *
+            FROM investments i
+            LEFT JOIN bonds b2 ON i.id = b2.id_investment
+            LEFT JOIN stocks s ON i.id = s.id_investment
+            LEFT JOIN mutual_funds mf ON i.id = mf.id_investment
+            ORDER BY id
+            """;
+
+    private static final String LOGIN =System.getenv("DB_LOGIN");
+    private static final String PASSWORD = System.getenv("DB_PASSWORD");
+    private static final String URL = System.getenv("DB_URL");
 
     public List<Investment> load() {
         List<Investment> portfolio;
         Connection conn = openConnection();
         try (conn) {
-            portfolio = new LinkedList<>(load(conn));
-            logger.info("Loaded {} investments into portfolio", portfolio.size());
+            portfolio = load(conn);
+            log.info("Loaded {} investments into portfolio", portfolio.size());
         } catch (SQLException e) {
-            logger.warn("Error while loading investments", e);
+            log.warn("Error while loading investments", e);
             throw new IncorrectSQLInputException("Failed to load investment from database", e);
         }
         return portfolio;
@@ -74,17 +78,17 @@ public class BinaryRepository {
             int id = insertInvestment(conn, investment);
             insertSpecific(conn, investment, id);
             conn.commit();
-            logger.info("Transaction commited");
+            log.info("Transaction commited");
             conn.close();
         } catch (SQLException e) {
             try {
                 conn.rollback();
                 conn.close();
             } catch (SQLException ex) {
-                logger.warn("Rollback failed after SQL exception", ex);
+                log.warn("Rollback failed after SQL exception", ex);
                 throw new RuntimeException(ex);
             }
-            logger.warn("SQL exception occurred during insert operation");
+            log.warn("SQL exception occurred during insert operation");
             throw new IncorrectSQLInputException("Failed to insert investment into database", e);
         }
     }
@@ -97,9 +101,10 @@ public class BinaryRepository {
                 case Stock ignored -> ps.setString(2, "STOCK");
                 case MutualFund ignored -> ps.setString(2, "MUTUAL_FUND");
             }
-            ResultSet rs = ps.executeQuery();
-            rs.next();
-            return rs.getInt("id");
+            try (ResultSet rs = ps.executeQuery()) {
+                rs.next();
+                return rs.getInt("id");
+            }
         }
     }
 
@@ -145,10 +150,10 @@ public class BinaryRepository {
 
     private Connection openConnection() {
         try {
-            logger.info("Opening database connection");
+            log.info("Opening database connection");
             return DriverManager.getConnection(URL, LOGIN, PASSWORD);
         } catch (SQLException e) {
-            logger.warn("Unable to establish database connection", e);
+            log.warn("Unable to establish database connection", e);
             throw new IncorrectSQLInputException("Impossible connect with database", e);
         }
     }

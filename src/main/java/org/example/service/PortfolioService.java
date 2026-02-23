@@ -1,25 +1,24 @@
 package org.example.service;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.Validate;
 import org.example.model.*;
-import org.example.repository.BinaryRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.example.repository.JdbcInvestmentRepository;
 
 import java.time.LocalDate;
 import java.util.*;
 
 @AllArgsConstructor
+@Slf4j
 public class PortfolioService {
 
     private static final String INCORRECT_MESSAGE = "This %s doesn't exist.";
-    private static final Logger logger = LoggerFactory.getLogger(PortfolioService.class);
 
-    private final BinaryRepository repository;
+    private final JdbcInvestmentRepository repository;
 
     public double calculateTotalPortfolioValue() {
-        logger.debug("Calculating total portfolio value");
+        log.debug("Calculating total portfolio value");
         List<Investment> portfolio = takeAllInvestments();
         double totalSum = 0;
         for (Investment investment : portfolio) {
@@ -49,7 +48,7 @@ public class PortfolioService {
                 case Stock stock -> stockAllocation += stock.calculateCurrentValue();
                 case MutualFund mutualFund -> mutualFunAllocation += mutualFund.calculateCurrentValue();
                 default -> {
-                    logger.error("Unknown investment type: {}", investment.getClass().getName());
+                    log.error("Unknown investment type: {}", investment.getClass().getName());
                     throw new IllegalStateException(INCORRECT_MESSAGE.formatted(investment));
                 }
             }
@@ -61,7 +60,7 @@ public class PortfolioService {
     }
 
     public List<Investment> findBondsMaturingIn(int year) {
-        logger.debug("Searching for bonds maturing in {}", year);
+        log.debug("Searching for bonds maturing in {}", year);
         List<Investment> portfolio = takeAllInvestments();
         List<Investment> bonds = new LinkedList<>();
         for (Investment investment : portfolio) {
@@ -73,12 +72,12 @@ public class PortfolioService {
                 }
             }
         }
-        logger.debug("Found {} bonds maturing in {}", bonds.size(), year);
+        log.debug("Found {} bonds maturing in {}", bonds.size(), year);
         return bonds;
     }
 
     public Investment findHighestValueAsset() {
-        logger.debug("Finding highest value asset");
+        log.debug("Finding highest value asset");
         Investment investment = null;
         List<Investment> portfolio = takeAllInvestments();
         double current;
@@ -91,7 +90,7 @@ public class PortfolioService {
             }
         }
         Objects.requireNonNull(investment, "investment must not be null");
-        logger.info("Highest value asset is {} with value {}",
+        log.info("Highest value asset is {} with value {}",
                 investment.getName(), max);
         return investment;
     }
@@ -101,13 +100,13 @@ public class PortfolioService {
         Validate.notBlank(newInvestment.getName(), "Name cannot be empty");
         newInvestment.validate();
         repository.add(newInvestment);
-        logger.info("Investment created: {}", newInvestment.getName());
+        log.info("Investment created: {}", newInvestment.getName());
     }
 
     public List<Investment> takeAllInvestments() {
-        logger.debug("Loading all investments from repository");
+        log.debug("Loading all investments from repository");
         List<Investment> portfolio = repository.load();
-        logger.debug("Loaded {} investments", portfolio.size());
+        log.debug("Loaded {} investments", portfolio.size());
         return portfolio;
     }
 
@@ -121,6 +120,6 @@ public class PortfolioService {
         }
         Objects.requireNonNull(investmentClone);
         repository.add(investmentClone);
-        logger.info("Investment cloned: {}, {}", investmentClone.getId(), investmentClone.getName());
+        log.info("Investment cloned: {}, {}", investmentClone.getId(), investmentClone.getName());
     }
 }
