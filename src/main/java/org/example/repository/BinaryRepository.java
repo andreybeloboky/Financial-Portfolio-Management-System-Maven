@@ -25,12 +25,13 @@ public class BinaryRepository {
     private static final String URL = "jdbc:postgresql://localhost:5433/postgres";
 
     public List<Investment> load() {
-        List<Investment> portfolio = new LinkedList<>();
+        List<Investment> portfolio;
         Connection conn = openConnection();
         try (conn) {
-            portfolio.addAll(load(conn));
+            portfolio = new LinkedList<>(load(conn));
+            logger.info("Loaded {} investments into portfolio", portfolio.size());
         } catch (SQLException e) {
-            logger.warn("Error while loading: {}", portfolio.size());
+            logger.warn("Error while loading investments", e);
             throw new IncorrectSQLInputException("Failed to load investment from database", e);
         }
         return portfolio;
@@ -73,14 +74,17 @@ public class BinaryRepository {
             int id = insertInvestment(conn, investment);
             insertSpecific(conn, investment, id);
             conn.commit();
+            logger.info("Transaction commited");
             conn.close();
         } catch (SQLException e) {
             try {
                 conn.rollback();
                 conn.close();
             } catch (SQLException ex) {
+                logger.warn("Rollback failed after SQL exception", ex);
                 throw new RuntimeException(ex);
             }
+            logger.warn("SQL exception occurred during insert operation");
             throw new IncorrectSQLInputException("Failed to insert investment into database", e);
         }
     }
@@ -141,8 +145,10 @@ public class BinaryRepository {
 
     private Connection openConnection() {
         try {
+            logger.info("Opening database connection");
             return DriverManager.getConnection(URL, LOGIN, PASSWORD);
         } catch (SQLException e) {
+            logger.warn("Unable to establish database connection", e);
             throw new IncorrectSQLInputException("Impossible connect with database", e);
         }
     }
