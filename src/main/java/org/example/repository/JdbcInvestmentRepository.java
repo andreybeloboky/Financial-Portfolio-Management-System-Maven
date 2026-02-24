@@ -23,9 +23,13 @@ public class JdbcInvestmentRepository {
             LEFT JOIN mutual_funds mf ON i.id = mf.id_investment
             ORDER BY id
             """;
-    private static final String LOGIN = System.getenv("DB_LOGIN");
-    private static final String PASSWORD = System.getenv("DB_PASSWORD");
-    private static final String URL = System.getenv("DB_URL");
+    private static final String SELECT_COPY = """
+            SELECT *
+            FROM investments i
+            LEFT JOIN bonds b2 ON i.id = b2.id_investment
+            LEFT JOIN stocks s ON i.id = s.id_investment
+            LEFT JOIN mutual_funds mf ON i.id = mf.id_investment 
+            WHERE id = ?""";
     private static final String ID = "id";
     private static final String TYPE = "type";
     private static final String NAME = "name";
@@ -41,6 +45,53 @@ public class JdbcInvestmentRepository {
     private static final String CURRENT_NAV = "current_nav";
     private static final String AVG_ANNUAL_DISTRIBUTION = "avg_annual_distribution";
 
+    private static final String LOGIN = System.getenv("DB_LOGIN");
+    private static final String PASSWORD = System.getenv("DB_PASSWORD");
+    private static final String URL = System.getenv("DB_URL");
+
+
+    public Investment loadById(int id) {
+        try (Connection conn = openConnection();
+             PreparedStatement rs = conn.prepareStatement(SELECT_COPY)) {
+            rs.setInt(1, id);
+            ResultSet resultSet = rs.executeQuery();
+            List<Investment> requiredId = findInvestment(resultSet);
+            return requiredId.getFirst();
+        } catch (SQLException e) {
+            log.warn("Error while loading investments", e);
+            throw new DataAccessException("Failed to load investment from database", e);
+        }
+    }
+
+    private List<Investment> findInvestment(ResultSet resultSet) throws SQLException {
+        List<Investment> investments = new ArrayList<>();
+        while (resultSet.next()) {
+            InvestmentType type = InvestmentType.valueOf(resultSet.getString(TYPE));
+            switch (type) {
+                case BOND -> investments.add(Bond.builder().id(resultSet.getInt(ID)).name(resultSet.getString(NAME))
+                        .faceValue(resultSet.getDouble(FACE_VALUE))
+                        .couponRate(resultSet.getDouble(COUPON_RATE))
+                        .maturityDate(resultSet.getDate(LOCAL_DATE).toLocalDate()).build());
+
+                case STOCK -> investments.add(Stock.builder().id(resultSet.getInt(ID)).name(resultSet.getString(NAME))
+                        .tickerSymbol(resultSet.getString(TICKER_SYMBOL))
+                        .shares(resultSet.getInt(SHARES))
+                        .currentSharePrice(resultSet.getDouble(CURRENT_SHARE_PRICE))
+                        .annualDividendPerShare(resultSet.getDouble(ANNUAL_DIVIDEND_PER_SHARE))
+                        .build());
+
+                case MUTUAL_FUND -> investments.add(MutualFund.builder()
+                        .id(resultSet.getInt(ID))
+                        .name(resultSet.getString(NAME))
+                        .fundCode(resultSet.getString(FUND_CODE))
+                        .unitsHeld(resultSet.getDouble(UNITS_HELD))
+                        .currentNAV(resultSet.getDouble(CURRENT_NAV))
+                        .avgAnnualDistribution(resultSet.getDouble(AVG_ANNUAL_DISTRIBUTION)).build());
+
+            }
+        }
+        return investments;
+    }
 
     public List<Investment> load() {
         List<Investment> portfolio;
@@ -55,31 +106,10 @@ public class JdbcInvestmentRepository {
     }
 
     private List<Investment> load(Connection conn) throws SQLException {
-        List<Investment> portfolio = new ArrayList<>();
+        List<Investment> portfolio;
         try (PreparedStatement preparedStatement = conn.prepareStatement(SELECT);
              ResultSet rs = preparedStatement.executeQuery()) {
-            while (rs.next()) {
-                InvestmentType type = InvestmentType.valueOf(rs.getString(TYPE));
-                switch (type) {
-                    case BOND -> portfolio.add(Bond.builder().id(rs.getInt(ID)).name(rs.getString(NAME))
-                            .faceValue(rs.getDouble(FACE_VALUE))
-                            .couponRate(rs.getDouble(COUPON_RATE))
-                            .maturityDate(rs.getDate(LOCAL_DATE).toLocalDate()).build());
-                    case STOCK -> portfolio.add(Stock.builder().id(rs.getInt(ID)).name(rs.getString(NAME))
-                            .tickerSymbol(rs.getString(TICKER_SYMBOL))
-                            .shares(rs.getInt(SHARES))
-                            .currentSharePrice(rs.getDouble(CURRENT_SHARE_PRICE))
-                            .annualDividendPerShare(rs.getDouble(ANNUAL_DIVIDEND_PER_SHARE))
-                            .build());
-                    case MUTUAL_FUND -> portfolio.add(MutualFund.builder()
-                            .id(rs.getInt(ID))
-                            .name(rs.getString(NAME))
-                            .fundCode(rs.getString(FUND_CODE))
-                            .unitsHeld(rs.getDouble(UNITS_HELD))
-                            .currentNAV(rs.getDouble(CURRENT_NAV))
-                            .avgAnnualDistribution(rs.getDouble(AVG_ANNUAL_DISTRIBUTION)).build());
-                }
-            }
+            portfolio = findInvestment(rs);
         }
         return portfolio;
     }

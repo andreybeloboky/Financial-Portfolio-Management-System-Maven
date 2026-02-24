@@ -19,7 +19,7 @@ public class PortfolioService {
 
     public double calculateTotalPortfolioValue() {
         log.debug("Calculating total portfolio value");
-        List<Investment> portfolio = takeAllInvestments();
+        List<Investment> portfolio = findAllInvestments();
         double totalSum = 0;
         for (Investment investment : portfolio) {
             totalSum += investment.calculateCurrentValue();
@@ -28,7 +28,7 @@ public class PortfolioService {
     }
 
     public double calculateTotalProjectedAnnualReturn() {
-        List<Investment> portfolio = takeAllInvestments();
+        List<Investment> portfolio = findAllInvestments();
         double totalSum = 0;
         for (Investment investment : portfolio) {
             totalSum += investment.getProjectedAnnualReturn();
@@ -37,7 +37,7 @@ public class PortfolioService {
     }
 
     public Map<InvestmentType, Double> findAssetAllocationByType() {
-        List<Investment> investmentList = takeAllInvestments();
+        List<Investment> investmentList = findAllInvestments();
         Map<InvestmentType, Double> assetAllocationByType = new HashMap<>();
         double bondAllocation = 0;
         double stockAllocation = 0;
@@ -61,7 +61,7 @@ public class PortfolioService {
 
     public List<Investment> findBondsMaturingIn(int year) {
         log.debug("Searching for bonds maturing in {}", year);
-        List<Investment> portfolio = takeAllInvestments();
+        List<Investment> portfolio = findAllInvestments();
         List<Investment> bonds = new LinkedList<>();
         for (Investment investment : portfolio) {
             if (investment instanceof Bond bond) {
@@ -79,7 +79,7 @@ public class PortfolioService {
     public Investment findHighestValueAsset() {
         log.debug("Finding highest value asset");
         Investment investment = null;
-        List<Investment> portfolio = takeAllInvestments();
+        List<Investment> portfolio = findAllInvestments();
         double current;
         double max = 0;
         for (Investment investmentHighestValue : portfolio) {
@@ -103,7 +103,7 @@ public class PortfolioService {
         log.info("Investment created: {}", newInvestment.getName());
     }
 
-    public List<Investment> takeAllInvestments() {
+    public List<Investment> findAllInvestments() {
         log.debug("Loading all investments from repository");
         List<Investment> portfolio = repository.load();
         log.debug("Loaded {} investments", portfolio.size());
@@ -111,13 +111,8 @@ public class PortfolioService {
     }
 
     public void cloneInvestment(int id) throws CloneNotSupportedException {
-        List<Investment> portfolio = repository.load();
-        Investment investmentClone = null;
-        for (Investment investment : portfolio) {
-            if (investment.getId() == id) {
-                investmentClone = (Investment) investment.clone();
-            }
-        }
+        Investment copyInvestment = repository.loadById(id);
+        Investment investmentClone = (Investment) copyInvestment.clone();
         Objects.requireNonNull(investmentClone);
         repository.add(investmentClone);
         log.info("Investment cloned: {}, {}", investmentClone.getId(), investmentClone.getName());

@@ -50,7 +50,7 @@ public class PortfolioController {
                 }
                 break;
             case LIST:
-                List<Investment> allPortfolio = service.takeAllInvestments();
+                List<Investment> allPortfolio = service.findAllInvestments();
                 for (Investment investment : allPortfolio) {
                     switch (investment) {
                         case Bond bond ->

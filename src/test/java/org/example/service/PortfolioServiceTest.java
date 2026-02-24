@@ -100,14 +100,14 @@ public class PortfolioServiceTest {
     }
 
     @Test
-    public void takeAllInvestmentsTest() {
+    public void findAllInvestmentsTest() {
         JdbcInvestmentRepository mock = mock(JdbcInvestmentRepository.class);
         when(mock.load()).thenReturn(Arrays.asList(Stock.builder().id(321).name("Microsoft Corp.").tickerSymbol("MSFT")
                         .shares(75).currentSharePrice(310.50).annualDividendPerShare(2.25).build(),
                 Bond.builder().id(654).name("Corporate Bond XYZ").faceValue(5000)
                         .couponRate(0.045).maturityDate(LocalDate.of(2028, 6, 30)).build()));
         PortfolioService service = new PortfolioService(mock);
-        List<Investment> investments = service.takeAllInvestments();
+        List<Investment> investments = service.findAllInvestments();
         assertEquals(2, investments.size());
         assertEquals(Integer.valueOf(321), investments.get(0).getId());
         assertEquals("Corporate Bond XYZ", investments.get(1).getName());

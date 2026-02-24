@@ -122,12 +122,12 @@ class PortfolioControllerTest {
         fakeInvestments.add(fakeBondInvestment);
         fakeInvestments.add(fakeMutualFundInvestment);
         fakeInvestments.add(fakeStockInvestment);
-        when(portfolioService.takeAllInvestments()).thenReturn(fakeInvestments);
+        when(portfolioService.findAllInvestments()).thenReturn(fakeInvestments);
         Scanner scanner = mock(Scanner.class);
         when(scanner.nextLine()).thenReturn("LIST");
         PortfolioController controller = new PortfolioController(scanner, portfolioService);
         controller.process();
-        verify(portfolioService, times(1)).takeAllInvestments();
+        verify(portfolioService, times(1)).findAllInvestments();
     }
 
     @ParameterizedTest
