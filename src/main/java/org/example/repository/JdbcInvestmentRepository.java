@@ -26,11 +26,25 @@ public class JdbcInvestmentRepository {
     private static final String LOGIN = System.getenv("DB_LOGIN");
     private static final String PASSWORD = System.getenv("DB_PASSWORD");
     private static final String URL = System.getenv("DB_URL");
+    private static final String ID = "id";
+    private static final String TYPE = "type";
+    private static final String NAME = "name";
+    private static final String FACE_VALUE = "face_value";
+    private static final String COUPON_RATE = "coupon_rate";
+    private static final String LOCAL_DATE = "local_date";
+    private static final String TICKER_SYMBOL = "ticker_symbol";
+    private static final String SHARES = "shares";
+    private static final String CURRENT_SHARE_PRICE = "current_share_price";
+    private static final String ANNUAL_DIVIDEND_PER_SHARE = "annual_dividend_per_share";
+    private static final String FUND_CODE = "fund_code";
+    private static final String UNITS_HELD = "units_held";
+    private static final String CURRENT_NAV = "current_nav";
+    private static final String AVG_ANNUAL_DISTRIBUTION = "avg_annual_distribution";
+
 
     public List<Investment> load() {
         List<Investment> portfolio;
-        Connection conn = openConnection();
-        try (conn) {
+        try (Connection conn = openConnection()) {
             portfolio = load(conn);
             log.info("Loaded {} investments into portfolio", portfolio.size());
         } catch (SQLException e) {
@@ -45,25 +59,25 @@ public class JdbcInvestmentRepository {
         try (PreparedStatement preparedStatement = conn.prepareStatement(SELECT);
              ResultSet rs = preparedStatement.executeQuery()) {
             while (rs.next()) {
-                InvestmentType type = InvestmentType.valueOf(rs.getString("type"));
+                InvestmentType type = InvestmentType.valueOf(rs.getString(TYPE));
                 switch (type) {
-                    case BOND -> portfolio.add(Bond.builder().id(rs.getInt("id")).name(rs.getString("name"))
-                            .faceValue(rs.getDouble("face_value"))
-                            .couponRate(rs.getDouble("coupon_rate"))
-                            .maturityDate(rs.getDate("local_date").toLocalDate()).build());
-                    case STOCK -> portfolio.add(Stock.builder().id(rs.getInt("id")).name(rs.getString("name"))
-                            .tickerSymbol(rs.getString("ticker_symbol"))
-                            .shares(rs.getInt("shares"))
-                            .currentSharePrice(rs.getDouble("current_share_price"))
-                            .annualDividendPerShare(rs.getDouble("annual_dividend_per_share"))
+                    case BOND -> portfolio.add(Bond.builder().id(rs.getInt(ID)).name(rs.getString(NAME))
+                            .faceValue(rs.getDouble(FACE_VALUE))
+                            .couponRate(rs.getDouble(COUPON_RATE))
+                            .maturityDate(rs.getDate(LOCAL_DATE).toLocalDate()).build());
+                    case STOCK -> portfolio.add(Stock.builder().id(rs.getInt(ID)).name(rs.getString(NAME))
+                            .tickerSymbol(rs.getString(TICKER_SYMBOL))
+                            .shares(rs.getInt(SHARES))
+                            .currentSharePrice(rs.getDouble(CURRENT_SHARE_PRICE))
+                            .annualDividendPerShare(rs.getDouble(ANNUAL_DIVIDEND_PER_SHARE))
                             .build());
                     case MUTUAL_FUND -> portfolio.add(MutualFund.builder()
-                            .id(rs.getInt("id"))
-                            .name(rs.getString("name"))
-                            .fundCode(rs.getString("fund_code"))
-                            .unitsHeld(rs.getDouble("units_held"))
-                            .currentNAV(rs.getDouble("current_nav"))
-                            .avgAnnualDistribution(rs.getDouble("avg_annual_distribution")).build());
+                            .id(rs.getInt(ID))
+                            .name(rs.getString(NAME))
+                            .fundCode(rs.getString(FUND_CODE))
+                            .unitsHeld(rs.getDouble(UNITS_HELD))
+                            .currentNAV(rs.getDouble(CURRENT_NAV))
+                            .avgAnnualDistribution(rs.getDouble(AVG_ANNUAL_DISTRIBUTION)).build());
                 }
             }
         }
