@@ -1,7 +1,7 @@
 package org.example.repository;
 
 import lombok.extern.slf4j.Slf4j;
-import org.example.exception.IncorrectSQLInputException;
+import org.example.exception.DataAccessException;
 import org.example.model.*;
 
 import java.sql.*;
@@ -35,7 +35,7 @@ public class JdbcInvestmentRepository {
             log.info("Loaded {} investments into portfolio", portfolio.size());
         } catch (SQLException e) {
             log.warn("Error while loading investments", e);
-            throw new IncorrectSQLInputException("Failed to load investment from database", e);
+            throw new DataAccessException("Failed to load investment from database", e);
         }
         return portfolio;
     }
@@ -81,7 +81,7 @@ public class JdbcInvestmentRepository {
             } catch (SQLException e) {
                 conn.rollback();
                 log.warn("SQL exception occurred, transaction rolled back", e);
-                throw new IncorrectSQLInputException("Failed to insert investment into database", e);
+                throw new DataAccessException("Failed to insert investment into database", e);
             }
         } catch (SQLException e) {
             throw new RuntimeException("Database connection error", e);
@@ -152,7 +152,7 @@ public class JdbcInvestmentRepository {
             return DriverManager.getConnection(URL, LOGIN, PASSWORD);
         } catch (SQLException e) {
             log.warn("Unable to establish database connection", e);
-            throw new IncorrectSQLInputException("Impossible connect with database", e);
+            throw new DataAccessException("Impossible connect with database", e);
         }
     }
 }
