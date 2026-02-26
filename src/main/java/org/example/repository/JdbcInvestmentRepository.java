@@ -21,7 +21,7 @@ public class JdbcInvestmentRepository {
             LEFT JOIN bonds b2 ON i.id = b2.id_investment
             LEFT JOIN stocks s ON i.id = s.id_investment
             LEFT JOIN mutual_funds mf ON i.id = mf.id_investment
-            ORDER BY id
+            ORDER BY id*
             """;
     private static final String SELECT_COPY = """
             SELECT *
