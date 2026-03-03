@@ -20,11 +20,7 @@ public class PortfolioService {
     public double calculateTotalPortfolioValue() {
         log.debug("Calculating total portfolio value");
         List<Investment> portfolio = findAllInvestments();
-        double totalSum = 0;
-        for (Investment investment : portfolio) {
-            totalSum += investment.calculateCurrentValue();
-        }
-        return totalSum;
+        return portfolio.stream().mapToDouble(Investment::calculateCurrentValue).sum();
     }
 
     public double calculateTotalProjectedAnnualReturn() {
