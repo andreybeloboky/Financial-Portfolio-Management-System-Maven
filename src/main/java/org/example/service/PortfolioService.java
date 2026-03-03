@@ -29,11 +29,7 @@ public class PortfolioService {
 
     public double calculateTotalProjectedAnnualReturn() {
         List<Investment> portfolio = findAllInvestments();
-        double totalSum = 0;
-        for (Investment investment : portfolio) {
-            totalSum += investment.getProjectedAnnualReturn();
-        }
-        return totalSum;
+        return portfolio.stream().mapToDouble(Investment::getProjectedAnnualReturn).sum();
     }
 
     public Map<InvestmentType, Double> findAssetAllocationByType() {
