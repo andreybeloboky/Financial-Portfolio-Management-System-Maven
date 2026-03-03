@@ -6,6 +6,7 @@ import org.example.model.*;
 import org.example.service.PortfolioService;
 
 import java.time.LocalDate;
+import java.util.DoubleSummaryStatistics;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -81,8 +82,8 @@ public class PortfolioController {
                         System.out.println(highestValueAsset.getName());
                     }
                     case ALLOCATION -> {
-                        Map<InvestmentType, Double> assetAllocationByType = service.findAssetAllocationByType();
-                        for (Map.Entry<InvestmentType, Double> entry : assetAllocationByType.entrySet()) {
+                        Map<InvestmentType, DoubleSummaryStatistics> assetAllocationByType = service.findAssetAllocationByType();
+                        for (Map.Entry<InvestmentType, DoubleSummaryStatistics> entry : assetAllocationByType.entrySet()) {
                             System.out.printf(VALUE.formatted(entry.getKey(), entry.getValue()));
                         }
                     }

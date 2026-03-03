@@ -8,6 +8,7 @@ import org.example.repository.JdbcInvestmentRepository;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Slf4j
@@ -28,44 +29,24 @@ public class PortfolioService {
         return portfolio.stream().mapToDouble(Investment::getProjectedAnnualReturn).sum();
     }
 
-    public Map<InvestmentType, Double> findAssetAllocationByType() {
+    public Map<InvestmentType, DoubleSummaryStatistics> findAssetAllocationByType() {
         List<Investment> investmentList = findAllInvestments();
-        Map<InvestmentType, Double> assetAllocationByType = new HashMap<>();
-        double bondAllocation = 0;
-        double stockAllocation = 0;
-        double mutualFunAllocation = 0;
-        for (Investment investment : investmentList) {
-            switch (investment) {
-                case Bond bond -> bondAllocation += bond.calculateCurrentValue();
-                case Stock stock -> stockAllocation += stock.calculateCurrentValue();
-                case MutualFund mutualFund -> mutualFunAllocation += mutualFund.calculateCurrentValue();
-                default -> {
+        return investmentList.stream().collect(Collectors.groupingBy(
+                investment -> {
+                    if (investment instanceof Stock) return InvestmentType.STOCK;
+                    if (investment instanceof Bond) return InvestmentType.BOND;
+                    if (investment instanceof MutualFund) return InvestmentType.MUTUAL_FUND;
                     log.error("Unknown investment type: {}", investment.getClass().getName());
                     throw new IllegalStateException(INCORRECT_MESSAGE.formatted(investment));
-                }
-            }
-        }
-        assetAllocationByType.put(InvestmentType.STOCK, stockAllocation);
-        assetAllocationByType.put(InvestmentType.BOND, bondAllocation);
-        assetAllocationByType.put(InvestmentType.MUTUAL_FUND, mutualFunAllocation);
-        return assetAllocationByType;
+                },
+                Collectors.summarizingDouble(Investment::calculateCurrentValue)));
     }
 
     public List<Investment> findBondsMaturingIn(int year) {
         log.debug("Searching for bonds maturing in {}", year);
         List<Investment> portfolio = findAllInvestments();
-        List<Investment> bonds = new LinkedList<>();
-        for (Investment investment : portfolio) {
-            if (investment instanceof Bond bond) {
-                LocalDate date = bond.getMaturityDate();
-                int yearBond = date.getYear();
-                if (yearBond == year) {
-                    bonds.add(investment);
-                }
-            }
-        }
-        log.debug("Found {} bonds maturing in {}", bonds.size(), year);
-        return bonds;
+        return portfolio.stream().filter(investment -> investment instanceof Bond bond
+                && bond.getMaturityDate().getYear() == year).toList();
     }
 
     public Investment findHighestValueAsset() {
